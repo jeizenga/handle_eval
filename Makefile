@@ -15,8 +15,16 @@ INC+=-I dankgraph/gfakluge-prefix/src/gfakluge/src
 INC+=-I dankgraph/sdsl-lite-prefix/src/sdsl-lite/src
 INC+=-I dankgraph/sparsepp-prefix/src/sparsepp/sparsepp
 INC+=-I dankgraph/tayweeargs-prefix/src/tayweeargs
+INC+=-I dankgraph/ska-prefix/src/ska
 INC+=-I dankgraph/src
 INC+=-I vg/include
+INC+=-I vg/cpp
+INC+=-I vg
+INC+=-I vg/include/dynamic
+INC+=-I vg/include/sonLib
+INC+=-I vg/src
+INC+=-I vg/src/algorithms
+
 
 CXXFLAGS=
 CXXFLAGS += -Xpreprocessor -fopenmp

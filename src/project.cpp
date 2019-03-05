@@ -3,17 +3,21 @@
 #include <stdio.h>
 #include <iostream>
 
+#include "dankgraph/src/graph.hpp"
 #include "vg/src/vg.hpp"
 #include "vg/src/xg.hpp"
 #include "vg/src/handle.hpp"
 #include "vg/src/convert_handle.hpp"
 #include "vg/src/packed_graph.hpp"
 #include "vg/src/hash_graph.hpp"
-
+#include "vg/src/stream/vpkg.hpp"
 
 
 
 using namespace std;
+using namespace xg;
+using namespace vg;
+using namespace handlegraph;
 void help_me(char** argv) {
     cerr << "usage: " << argv[0] << " project [in_option] input_file [out_options]" << endl;
 }
@@ -80,43 +84,38 @@ int main(int argc, char** argv) {
     cerr << "hg_out" << hg_out << endl;
     cerr << "dg_out" << dg_out << endl;
 
-    unique_ptr<XG> graph;
-    if (vg_in.size()){
-        ifstream in;
-        in.open(vg_in.c_str());
-        graph = unique_ptr<XG>(new XG());
-        graph->from_stream(in, validate_graph, print_graph, store_threads, is_sorted_dag);
-
+    
+    vg::VG* graph;
+    if (!vg_in.empty()){
+        ifstream in(vg_in);
+        graph->from_istream(in);
     }
-    if (xg_in.size()) {
-        get_input_file(xg_in, [&](istream& in) {
-            // Load from an XG file or - (stdin)
-            graph = stream::VPKG::load_one<XG>(in);
-        });
-    }
-
-    // let's try converting
-    if (vg_out){
-        VG vg;
-        convert_handle_graph(&graph, &vg);
-    }
-    else if (xg_out){
-        xg::XG xg;
-        convert_handle_graph(&graph, &vg);
-    }
-    else if (pg_out){
-        PackedGraph pg;
-        convert_handle_graph(&graph, &pg);
-    }
-    else if (hg_out){
-        HashGraph hg;
-        convert_handle_graph(&graph, &hg);
-    }
+    
+    
+//    VG* vg;
+//    convert_handle_graph(&graph, &vg);
+//    // let's try converting
+//    if (vg_out){
+//        VG vg;
+//        convert_handle_graph(&test_vg, &vg);
+//    }
+//    else if (xg_out){
+//        XG xg;
+//        convert_handle_graph(&graph, &vg);
+//    }
+//    else if (pg_out){
+//        PackedGraph pg;
+//        convert_handle_graph(&graph, &pg);
+//    }
+//    else if (hg_out){
+//        HashGraph hg;
+//        convert_handle_graph(&graph, &hg);
+//    }
 //    else if (dg_out){
 //    }
 //    else {
 //
 //    }
-    
+    cerr << "end of program" << endl;
     
 }
