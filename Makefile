@@ -1,6 +1,6 @@
 
 FINDLIB=
-FINDLIB+=-L vg/lib
+FINDLIB+=-L ./vg/lib
 FINDLIB+=-L /usr/lib
 FINDLIB+=-L /usr/local/lib
 FINDLIB+=-L /opt/local/lib
@@ -39,13 +39,14 @@ INC+=-I /opt/local/include/cairo
 INC+=-I /opt/local/include/glib-2.0 -I/opt/local/lib/glib-2.0/include
 
 ODGI_OBJ=
-ODGI_OBJ+=dankgraph/CMakeFiles/odgi.dir/src/graph.cpp.o
-ODGI_OBJ+=dankgraph/CMakeFiles/odgi.dir/src/crash.cpp.o
-ODGI_OBJ+=dankgraph/CMakeFiles/odgi.dir/src/node.cpp.o
-ODGI_OBJ+=dankgraph/CMakeFiles/odgi.dir/src/position.cpp.o
-ODGI_OBJ+=dankgraph/CMakeFiles/odgi.dir/src/threads.cpp.o
+#ODGI_OBJ+=dankgraph/CMakeFiles/odgi.dir/src/graph.cpp.o
+#ODGI_OBJ+=dankgraph/CMakeFiles/odgi.dir/src/crash.cpp.o
+#ODGI_OBJ+=dankgraph/CMakeFiles/odgi.dir/src/node.cpp.o
+#ODGI_OBJ+=dankgraph/CMakeFiles/odgi.dir/src/position.cpp.o
+#ODGI_OBJ+=dankgraph/CMakeFiles/odgi.dir/src/threads.cpp.o
 
 CXXFLAGS=
+CXXFLAGS += -O3 --std=c++14
 CXXFLAGS += -Xpreprocessor -fopenmp
 CXXFLAGS += -I/opt/local/include/libomp
 
@@ -54,9 +55,10 @@ all: bin/project
 vg/lib/libvg.a: vg/src/*
 	cd vg && make -j 4
 
-dankgraph/CMakeFiles/odgi.dir/src/graph.cpp.o: dankgraph/src/*
-	cd dankgraph && cmake CMakeLists.txt && make -j 4
+#dankgraph/CMakeFiles/odgi.dir/src/graph.cpp.o: dankgraph/src/*
+#	cd dankgraph && cmake CMakeLists.txt && make -j 4
 
-bin/project: src/project.cpp vg/lib/libvg.a dankgraph/CMakeFiles/odgi.dir/src/graph.cpp.o
+bin/project: src/project.cpp vg/lib/libvg.a #dankgraph/CMakeFiles/odgi.dir/src/graph.cpp.o
 	g++ src/project.cpp $(INC) $(CXXFLAGS) -c -o obj/project.o
-	g++ obj/project.o /opt/local/lib/libstdc++.6.dylib $(ODGI_OBJ) $(FINDLIB) $(LIB) $(CXXFLAGS) -o bin/project
+#	g++ obj/project.o $(ODGI_OBJ) $(FINDLIB) $(LIB) $(CXXFLAGS) -o bin/project
+	g++ obj/project.o /opt/local/lib/libstdc++.6.dylib ./vg/lib/libvgio.a $(ODGI_OBJ) $(FINDLIB) $(LIB) $(CXXFLAGS) -o bin/project
