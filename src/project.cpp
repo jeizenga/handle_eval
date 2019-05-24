@@ -207,10 +207,12 @@ void make_nodes_per_second(int convert_type, string input_file){
         test_graph = vg_graph;
     }
     else if (pg_in){
+        pg = new PackedGraph();
         pg->deserialize(in);
         test_graph = pg;
     }
     else if (hg_in){
+        hg = new HashGraph();
         hg->deserialize(in);
         test_graph = hg;
     }
@@ -340,10 +342,12 @@ void make_edges_per_second(int convert_type, string input_file){
         test_graph = vg_graph;
     }
     else if (pg_in){
+        pg = new PackedGraph();
         pg->deserialize(in);
         test_graph = pg;
     }
     else if (hg_in){
+        hg = new HashGraph();
         hg->deserialize(in);
         test_graph = hg;
     }
@@ -414,10 +418,12 @@ void make_paths_per_second(int convert_type, string input_file){
         test_graph = vg_graph;
     }
     else if (pg_in){
+        pg = new PackedGraph();
         pg->deserialize(in);
         test_graph = pg;
     }
     else if (hg_in){
+        hg = new HashGraph();
         hg->deserialize(in);
         test_graph = hg;
     }
