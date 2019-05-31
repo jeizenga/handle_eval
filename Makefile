@@ -12,16 +12,16 @@ LIB+=-lvcflib -lgssw -lssw -lprotobuf -lsublinearLS -lhts -ldeflate -lpthread -l
 LIB+=-lcairo -lz -lgobject-2.0 -lffi -lglib-2.0 -lintl -lpcre -lintl  -liconv -lpixman-1 -lfontconfig -liconv -lexpat -luuid -lfreetype -lbz2 -lpng16 -lz -lX11-xcb -lxcb-render -lXrender -lXext -lX11 -lxcb -lXau -lXdmcp -ldl -llzma -lrocksdb  -lsnappy -lz -lbz2 -llz4 
 
 INC=
-INC+=-I dankgraph/dynamic-prefix/src/dynamic/include
-INC+=-I dankgraph/gfakluge-prefix/src/gfakluge/src
-INC+=-I dankgraph/sdsl-lite-prefix/src/sdsl-lite/src
-INC+=-I dankgraph/sparsepp-prefix/src/sparsepp/sparsepp
-INC+=-I dankgraph/tayweeargs-prefix/src/tayweeargs
-INC+=-I dankgraph/handlegraph-prefix/src
-INC+=-I dankgraph/backwardscpp-prefix/src
-INC+=-I dankgraph/bbhash-prefix/src
-INC+=-I dankgraph/bsort-prefix/src
-INC+=-I dankgraph/ska-prefix/src/ska
+INC+=-I dankgraph/build/dynamic-prefix/src/dynamic/include
+INC+=-I dankgraph/build/gfakluge-prefix/src/gfakluge/src
+INC+=-I dankgraph/build/sdsl-lite-prefix/src/sdsl-lite/src
+INC+=-I dankgraph/build/sparsepp-prefix/src/sparsepp/sparsepp
+INC+=-I dankgraph/build/tayweeargs-prefix/src/tayweeargs
+INC+=-I dankgraph/build/handlegraph-prefix/src
+INC+=-I dankgraph/build/backwardscpp-prefix/src
+INC+=-I dankgraph/build/bbhash-prefix/src
+INC+=-I dankgraph/build/bsort-prefix/src
+INC+=-I dankgraph/build/ska-prefix/src/ska
 INC+=-I dankgraph/src
 INC+=-I vg/include
 INC+=-I vg/cpp
@@ -39,11 +39,11 @@ INC+=-I /opt/local/include/cairo
 INC+=-I /opt/local/include/glib-2.0 -I/opt/local/lib/glib-2.0/include
 
 ODGI_OBJ=
-#ODGI_OBJ+=dankgraph/CMakeFiles/odgi.dir/src/graph.cpp.o
-#ODGI_OBJ+=dankgraph/CMakeFiles/odgi.dir/src/crash.cpp.o
-#ODGI_OBJ+=dankgraph/CMakeFiles/odgi.dir/src/node.cpp.o
-#ODGI_OBJ+=dankgraph/CMakeFiles/odgi.dir/src/position.cpp.o
-#ODGI_OBJ+=dankgraph/CMakeFiles/odgi.dir/src/threads.cpp.o
+ODGI_OBJ+=dankgraph/build/CMakeFiles/odgi.dir/src/graph.cpp.o
+ODGI_OBJ+=dankgraph/build/CMakeFiles/odgi.dir/src/crash.cpp.o
+ODGI_OBJ+=dankgraph/build/CMakeFiles/odgi.dir/src/node.cpp.o
+ODGI_OBJ+=dankgraph/build/CMakeFiles/odgi.dir/src/position.cpp.o
+ODGI_OBJ+=dankgraph/build/CMakeFiles/odgi.dir/src/threads.cpp.o
 
 CXXFLAGS=
 CXXFLAGS += -O3 --std=c++14
@@ -55,10 +55,10 @@ all: bin/project
 vg/lib/libvg.a: vg/src/*
 	cd vg && make -j 4
 
-#dankgraph/CMakeFiles/odgi.dir/src/graph.cpp.o: dankgraph/src/*
-#	cd dankgraph && cmake CMakeLists.txt && make -j 4
+dankgraph/build/CMakeFiles/odgi.dir/src/graph.cpp.o: dankgraph/src/*
+	cd dankgraph && mkdir -p build && cd build && cmake .. && make -j 4
 
-bin/project: src/project.cpp vg/lib/libvg.a #dankgraph/CMakeFiles/odgi.dir/src/graph.cpp.o
+bin/project: src/project.cpp vg/lib/libvg.a dankgraph/build/CMakeFiles/odgi.dir/src/graph.cpp.o
 	g++ src/project.cpp $(INC) $(CXXFLAGS) -c -o obj/project.o
-#	g++ obj/project.o $(ODGI_OBJ) $(FINDLIB) $(LIB) $(CXXFLAGS) -o bin/project
+	g++ obj/project.o $(ODGI_OBJ) $(FINDLIB) $(LIB) $(CXXFLAGS) -o bin/project
 	g++ obj/project.o /opt/local/lib/libstdc++.6.dylib ./vg/lib/libvgio.a $(ODGI_OBJ) $(FINDLIB) $(LIB) $(CXXFLAGS) -o bin/project

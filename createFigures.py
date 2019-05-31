@@ -32,7 +32,7 @@ def createFigure(inputFile, outputDirectory):
             data[testType] = df.loc[df['test type'] == testType]
 
     for fileName in convertData["file name"].unique():
-        if fileName == "all.vg" or fileName == "created":
+        if fileName == "all.vg" or fileName == "created" or fileName == ".DS_Store":
             pass
         else:
             # make the figure
@@ -145,10 +145,15 @@ def createFigure(inputFile, outputDirectory):
                                                   linewidth=.1)
                 panel3.add_patch(rectangle3)
 
-
+            scientific = np.format_float_scientific(max(memory.values())*1.1)
+            power = int(scientific.split("e+")[-1])
             panel1.set_ylim(0, max(memory.values()) * 1.1)
             panel1.set_xlim(0, max(bins))
-            panel1.set_ylabel("Memory")
+
+            roundedNumber = special_round(max(memory.values()) * 1.1, 10**power)
+            panel1.set_yticks([a for a in np.linspace(0, roundedNumber, 5)])
+            panel1.set_yticklabels([a for a in np.linspace(0, roundedNumber/10**power,  5)])
+            panel1.set_ylabel("Memory ($10^{"+str(power)+"}$)",)
             panel1.set_title("Construction Memory Usage")
             # offset = panel1.get_yaxis().get_offset_text()
             # print(offset, offset.get_text())
@@ -171,10 +176,17 @@ def createFigure(inputFile, outputDirectory):
                                right=False, labelright=False,
                                top=False, labeltop=False
                                )
-            panel2.set_title("Construction Speed Usage")
+
+            scientific = np.format_float_scientific(max(utilize.values()) * 1.1)
+            power = int(scientific.split("e+")[-1])
             panel3.set_ylim(0, max(utilize.values()) * 1.1)
             panel3.set_xlim(0, max(bins))
-            panel3.set_ylabel("Memory")
+
+            roundedNumber = special_round(max(utilize.values()) * 1.1, 10 ** power)
+            panel3.set_yticks([a for a in np.linspace(0, roundedNumber, 5)])
+            panel3.set_yticklabels([a for a in np.linspace(0, roundedNumber / 10 ** power, 5)])
+            panel3.set_ylabel("Memory ($10^{" + str(power) + "}$)", )
+            panel2.set_title("Construction Speed Usage")
             panel3.set_title("Utilization Memory Usage")
             # modify tick marks/labeling
             panel3.tick_params(axis="both", which="both",
@@ -230,7 +242,12 @@ def argParser():
                         help="specify the file name of the input file")
 
     return vars(parser.parse_args())
-
+def special_round(number,base):
+    """
+    Round numbers to a specific base.
+    """
+    floored = math.ceil(number/base) * base
+    return floored
 
 def main():
     args = argParser()

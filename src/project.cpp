@@ -63,7 +63,7 @@ void convert_graphs_test(int convert_type, string input_file, bool make_serializ
     cerr << "opened file" << endl;
     VG graph(in); // input graph called "graph"
     
-    cerr << "node_size " << graph.node_size() << endl;
+    cerr << "node_count " << graph.get_node_count() << endl;
     cerr << "edge_count " << graph.edge_count() << endl;
     cerr << "path_count " << graph.get_path_count() << endl;
     
@@ -79,14 +79,15 @@ void convert_graphs_test(int convert_type, string input_file, bool make_serializ
         VG vg;
         convert_path_handle_graph(&graph, &vg);
         if (make_serialized){
-            vg.serialize_to_ostream(cout);
+            vg.optimize();
+            vg.serialize(cout);
         }
     }
     else if (pg_out){
         PackedGraph pg;
         convert_path_handle_graph(&graph, &pg);
         if (make_serialized){
-            pg.compactify();
+            pg.optimize();
             pg.serialize(cout);
         }
     }
@@ -94,6 +95,7 @@ void convert_graphs_test(int convert_type, string input_file, bool make_serializ
         HashGraph hg;
         convert_path_handle_graph(&graph, &hg);
         if (make_serialized){
+            hg.optimize();
             hg.serialize(cout);
         }
     }
@@ -230,7 +232,7 @@ void make_nodes_per_second(int convert_type, string input_file){
     auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
     cerr << "number of nodes accessed: " << node_counter << endl;
-    cerr << "number of nodes in graph: " << test_graph->node_size() << endl;
+    cerr << "number of nodes in graph: " << test_graph->get_node_count() << endl;
     cerr << "elapsed time: " << elapsed_seconds.count() << endl;
 
 //    if (vg_in){

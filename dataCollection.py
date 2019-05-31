@@ -72,7 +72,7 @@ class resultMaker:
             elif graphType == 4:
                 graphName = ".og"
 
-            if graphName:
+            if len(graphName)==3:
                 with open(directory+"created/"+file[:-3]+graphName, "w") as outFile:
                     p = subprocess.Popen( ["/usr/bin/time", "-l", "./bin/project", str(testType), str(graphType), directory + file], stdout=outFile, stderr=subprocess.PIPE, encoding='utf8')
                     out, err = p.communicate()
