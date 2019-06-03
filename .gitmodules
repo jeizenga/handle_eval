@@ -1,3 +1,6 @@
 [submodule "vg"]
 	path = vg
 	url = https://github.com/vgteam/vg.git
+[submodule "odgi"]
+	path = odgi
+	url = https://github.com/vgteam/odgi.git

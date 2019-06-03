@@ -4,7 +4,7 @@
 #include <iostream>
 #include <chrono>
 
-//#include "dankgraph/src/graph.hpp"
+#include "odgi/src/graph.hpp"
 #include "vg/src/vg.hpp"
 #include "vg/src/xg.hpp"
 #include "vg/src/handle.hpp"
