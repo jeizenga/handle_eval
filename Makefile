@@ -7,11 +7,12 @@ FINDLIB+=-L /opt/local/lib
 FINDLIB+=-L /opt/local/lib/libomp
 
 LIB=
-LIB+=-lvg
+LIB+=-lvg -lvgio
 LIB+=-lvcflib -lgssw -lssw -lprotobuf -lsublinearLS -lhts -ldeflate -lpthread -ljansson -lncurses -lgcsa2 -lgbwt -ldivsufsort -ldivsufsort64 -lvcfh -lgfakluge -lraptor2 -lsdsl -lpinchesandcacti -l3edgeconnected -lsonlib -lfml -llz4 -lstructures -lvw -lboost_program_options -lallreduce -lz -lbz2 -llzma -lhandlegraph -lomp -lstdc++
-LIB+=-lcairo -lz -lgobject-2.0 -lffi -lglib-2.0 -lintl -lpcre -lintl  -liconv -lpixman-1 -lfontconfig -liconv -lexpat -luuid -lfreetype -lbz2 -lpng16 -lz -lX11-xcb -lxcb-render -lXrender -lXext -lX11 -lxcb -lXau -lXdmcp -ldl -llzma -lrocksdb  -lsnappy -lz -lbz2 -llz4 
+LIB+=-lcairo -lz -lgobject-2.0 -lffi -lglib-2.0 -lpcre  -liconv -lpixman-1 -lfontconfig -liconv -lexpat -luuid -lfreetype -lbz2 -lpng16 -lz -lX11-xcb -lxcb-render -lXrender -lXext -lX11 -lxcb -lXau -lXdmcp -ldl -llzma -lrocksdb  -lsnappy -lz -lbz2 -llz4 
 
 INC=
+INC+=-I .
 INC+=-I odgi/build/dynamic-prefix/src/dynamic/include
 INC+=-I odgi/build/gfakluge-prefix/src/gfakluge/src
 INC+=-I odgi/build/sdsl-lite-prefix/src/sdsl-lite/src
@@ -61,4 +62,12 @@ odgi/build/CMakeFiles/odgi.dir/src/graph.cpp.o: odgi/src/*
 bin/project: src/project.cpp vg/lib/libvg.a odgi/build/CMakeFiles/odgi.dir/src/graph.cpp.o
 	g++ src/project.cpp $(INC) $(CXXFLAGS) -c -o obj/project.o
 	g++ obj/project.o $(ODGI_OBJ) $(FINDLIB) $(LIB) $(CXXFLAGS) -o bin/project
-	g++ obj/project.o /opt/local/lib/libstdc++.6.dylib ./vg/lib/libvgio.a $(ODGI_OBJ) $(FINDLIB) $(LIB) $(CXXFLAGS) -o bin/project
+	g++ obj/project.o ./vg/lib/libvgio.a $(ODGI_OBJ) $(FINDLIB) $(LIB) $(CXXFLAGS) -o bin/project
+
+-include pre-build
+
+pre-build:
+	mkdir -p obj
+	mkdir -p bin
+
+.PHONY: pre-build;
