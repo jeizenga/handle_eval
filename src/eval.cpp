@@ -53,10 +53,9 @@ void convert_graphs_test(string& output_format, string& input_file, bool make_se
         abort();
     }
     
+    // load input graph
     ifstream in(input_file);
-    VG graph(in); // input graph called "graph"
-    
-    VG* vg = new VG();
+    VG graph(in);
     
     // convert into the format we indicated
     if (vg_out){
@@ -123,7 +122,7 @@ void test_from_serialized(string& serlialized_type, string& input_file, string& 
     VG* vg_graph = nullptr;
     PackedGraph* pg  = nullptr;
     HashGraph* hg = nullptr;
-//    graph_t dg = nullptr;
+    graph_t og = nullptr;
     
     
     PathHandleGraph* test_graph = nullptr;
@@ -145,8 +144,9 @@ void test_from_serialized(string& serlialized_type, string& input_file, string& 
         test_graph = hg;
     }
     else if (og_in){
-        dg = new graph_t(in);
-        test_graph = dg;
+        og = new graph_t();
+        og->deserialize(in);
+        test_graph = og;
     }
     
     if (test_name == "deserialize") {
@@ -206,35 +206,19 @@ void test_from_serialized(string& serlialized_type, string& input_file, string& 
 
 int main(int argc, char** argv) {
     
-    if (argc == 3) {
-        help_me(argv);
-        return 1;
-    }
-    if (argc < 4) {
+    if (argc != 4) {
         help_me(argv);
         return 1;
     }
     
-    // what test should we run?
-    
-    bool convert_graphs = false;
-    bool make_serialized = false;
-    bool make_deserialize = false;
-    bool nodes_per_second = false;
-    bool edges_per_second = false;
-    bool paths_per_second = false;
-    
-    // for converting to another graph
+    // get the command line args
     string test_name = argv[1];
     string convert_type = argv[2];
     string input_file = argv[3];
     
-    // look at out commands
-    if (test_name == "convert"){
-        convert_graphs_test(convert_type, input_file, false);
-    }
-    else if (test_name == "serialize"){
-        convert_graphs_test(convert_type, input_file, true);
+    // look either convert from VG and serlialize or test a serialized handle graph
+    if (test_name == "convert" || test_name == "serialize") {
+        convert_graphs_test(convert_type, input_file, test_name == "serialize");
     }
     else {
         test_from_serialized(convert_type, input_file, test_name);
