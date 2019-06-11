@@ -67,7 +67,7 @@ xg/build/CMakeFiles/xg.dir/src/xg.cpp.o: xg/src/*
 odgi/build/CMakeFiles/odgi.dir/src/graph.cpp.o: odgi/src/*
 	cd odgi && mkdir -p build && cd build && cmake .. && make -j 8
 
-bin/eval: src/eval.cpp vg/lib/libvg.a odgi/build/CMakeFiles/odgi.dir/src/graph.cpp.o
+bin/eval: src/eval.cpp vg/lib/libvg.a odgi/build/CMakeFiles/odgi.dir/src/graph.cpp.o xg/build/CMakeFiles/xg.dir/src/xg.cpp.o
 	g++ src/eval.cpp $(INC) $(CXXFLAGS) -c -o obj/eval.o
 	g++ obj/eval.o $(ODGI_OBJ) $(FINDLIB) $(LIB) $(CXXFLAGS) -o bin/eval
 

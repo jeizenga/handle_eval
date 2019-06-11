@@ -6,6 +6,7 @@
 
 #include "odgi/src/odgi.hpp"
 #include "odgi/src/gfa_to_handle.hpp"
+#include "xg/src/xg.hpp"
 #include "vg/src/vg.hpp"
 #include "vg/src/handle.hpp"
 #include "vg/src/convert_handle.hpp"
@@ -31,6 +32,7 @@ void convert_graphs_test(string& output_format, string& input_file, bool make_se
     bool pg_out = false;
     bool hg_out = false;
     bool og_out = false;
+    bool xg_out = false;
     
     if (output_format == "vg") {
         vg_out = true;
@@ -43,6 +45,9 @@ void convert_graphs_test(string& output_format, string& input_file, bool make_se
     }
     else if (output_format == "og") {
         og_out = true;
+    }
+    else if (output_format == "xg") {
+        xg_out = true;
     }
     else {
         abort();
@@ -81,14 +86,22 @@ void convert_graphs_test(string& output_format, string& input_file, bool make_se
             og.serialize(cout);
         }
     }
+    else if (xg_out){
+        XG xg;
+        xg.from_gfa(input_file);
+        if (make_serialized){
+            xg.serialize(cout);
+        }
+    }
 }
 
-void test_from_serialized(string& serlialized_type, string& input_file, string& test_name) {
+void test_from_serialized(string& serlialized_type, string& input_file, bool test_accesses) {
     
     bool vg_in = false;
     bool pg_in = false;
     bool hg_in = false;
     bool og_in = false;
+    bool xg_in = false;
     
     if (serlialized_type == "vg") {
         vg_in = true;
@@ -102,6 +115,9 @@ void test_from_serialized(string& serlialized_type, string& input_file, string& 
     else if (serlialized_type == "og") {
         og_in = true;
     }
+    else if (serlialized_type == "xg") {
+        xg_in = true;
+    }
     else {
         abort();
     }
@@ -110,6 +126,7 @@ void test_from_serialized(string& serlialized_type, string& input_file, string& 
     PackedGraph* pg  = nullptr;
     HashGraph* hg = nullptr;
     graph_t* og = nullptr;
+    XG* xg = nullptr;
     
     PathHandleGraph* test_graph = nullptr;
     
@@ -134,24 +151,21 @@ void test_from_serialized(string& serlialized_type, string& input_file, string& 
         og->load(in);
         test_graph = og;
     }
-    
-    if (test_name == "deserialize") {
-        // we're already done
+    else if (og_in){
+        xg = new XG();
+        xg->load(in);
+        test_graph = xg;
     }
-    else if (test_name == "nodes") {
+    
+    if (test_accesses) {
         
         int node_counter = 0;
-        auto start = std::chrono::system_clock::now();
+        auto node_start = std::chrono::system_clock::now();
         test_graph->for_each_handle([&](const handle_t& h) {
             node_counter++;
         });
-        auto end = std::chrono::system_clock::now();
-        std::chrono::duration<double> elapsed_seconds = end - start;
-        cerr << "number of nodes accessed: " << node_counter << endl;
-        cerr << "elapsed time: " << elapsed_seconds.count() << endl;
-        
-    }
-    else if (test_name == "edges") {
+        auto node_end = std::chrono::system_clock::now();
+        std::chrono::duration<double> node_elapsed_seconds = node_end - node_start;
         
         vector<handle_t> handles;
         test_graph->for_each_handle([&](const handle_t& h) {
@@ -161,32 +175,34 @@ void test_from_serialized(string& serlialized_type, string& input_file, string& 
         });
         
         int edge_counter = 0;
-        auto start = std::chrono::system_clock::now();
+        auto edge_start = std::chrono::system_clock::now();
         for(handle_t handle:handles){
             test_graph->follow_edges(handle, true, [&](const handle_t& next) {
                 edge_counter++;
             });
         }
-        auto end = std::chrono::system_clock::now();
+        auto edge_end = std::chrono::system_clock::now();
         
-        std::chrono::duration<double> elapsed_seconds = end - start;
-        cerr << "number of edges accessed: " << edge_counter << endl;
-        cerr << "elapsed time: " << elapsed_seconds.count() << endl;
-    }
-    else if (test_name == "paths") {
+        std::chrono::duration<double> edge_elapsed_seconds = edge_end - edge_start;
         
         int path_counter = 0;
-        auto start = std::chrono::system_clock::now();
+        auto path_start = std::chrono::system_clock::now();
         test_graph->for_each_path_handle([&](const path_handle_t& path_handle_1){
             for (handle_t handle : test_graph->scan_path(path_handle_1)) {
                 volatile handle_t temp_handle = handle;
             }
             path_counter++;
         });
-        auto end = std::chrono::system_clock::now();
-        std::chrono::duration<double> elapsed_seconds = end - start;
+        auto path_end = std::chrono::system_clock::now();
+        std::chrono::duration<double> path_elapsed_seconds = path_end - path_start;
+        
+        
+        cerr << "number of nodes accessed: " << node_counter << endl;
+        cerr << "elapsed time: " << node_elapsed_seconds.count() << endl;
+        cerr << "number of edges accessed: " << edge_counter << endl;
+        cerr << "elapsed time: " << edge_elapsed_seconds.count() << endl;
         cerr << "number of paths accessed: " << path_counter << endl;
-        cerr << "elapsed time: " << elapsed_seconds.count() << endl;
+        cerr << "elapsed time: " << path_elapsed_seconds.count() << endl;
     }
 }
 
@@ -202,11 +218,14 @@ int main(int argc, char** argv) {
     string convert_type = argv[2];
     string input_file = argv[3];
     
-    // look either convert from VG and serlialize or test a serialized handle graph
+    // either convert from GFA and serialize or test a serialized handle graph
     if (test_name == "convert" || test_name == "serialize") {
         convert_graphs_test(convert_type, input_file, test_name == "serialize");
     }
+    else if (test_name == "deserialize" || test_name == "access") {
+        test_from_serialized(convert_type, input_file, test_name == "access");
+    }
     else {
-        test_from_serialized(convert_type, input_file, test_name);
+        cerr << "available tests: convert, serialize, deserialize, access" << endl;
     }
 }
