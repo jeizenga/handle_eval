@@ -56,6 +56,8 @@ void convert_graphs_test(string& output_format, string& input_file, bool make_se
     ifstream in(input_file);
     VG graph(in); // input graph called "graph"
     
+    VG* vg = new VG();
+    
     // convert into the format we indicated
     if (vg_out){
         VG vg;
@@ -81,14 +83,14 @@ void convert_graphs_test(string& output_format, string& input_file, bool make_se
             hg.serialize(cout);
         }
     }
-//    else if (og_out){
-//        graph_t og;
-//        convert_path_handle_graph(&graph, &og);
-//        if (make_serialized){
-//            og.opimize();
-//            og.serialize(cout);
-//        }
-//    }
+    else if (og_out){
+        graph_t og;
+        convert_path_handle_graph(&graph, &og);
+        if (make_serialized){
+            og.opimize();
+            og.serialize(cout);
+        }
+    }
 }
 
 void test_from_serialized(string& serlialized_type, string& input_file, string& test_name) {
@@ -142,10 +144,10 @@ void test_from_serialized(string& serlialized_type, string& input_file, string& 
         hg->deserialize(in);
         test_graph = hg;
     }
-//    else if (og_in){
-//        dg = new graph_t(in);
-//        test_graph = dg;
-//    }
+    else if (og_in){
+        dg = new graph_t(in);
+        test_graph = dg;
+    }
     
     if (test_name == "deserialize") {
         // we're already done
