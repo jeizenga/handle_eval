@@ -4,3 +4,6 @@
 [submodule "odgi"]
 	path = odgi
 	url = https://github.com/vgteam/odgi.git
+[submodule "xg"]
+	path = xg
+	url = https://github.com/vgteam/xg.git

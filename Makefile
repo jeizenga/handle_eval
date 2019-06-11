@@ -31,6 +31,7 @@ INC+=-I vg/include/dynamic
 INC+=-I vg/include/sonLib
 INC+=-I vg/src
 INC+=-I vg/src/algorithms
+INC+=-I xg/src
 INC+=-I /usr/local/include
 INC+=-I /opt/local/include/pixman-1
 INC+=-I /opt/local/include/ossp
@@ -47,6 +48,9 @@ ODGI_OBJ+=odgi/build/CMakeFiles/odgi.dir/src/position.cpp.o
 ODGI_OBJ+=odgi/build/CMakeFiles/odgi.dir/src/threads.cpp.o
 ODGI_OBJ+=odgi/build/CMakeFiles/odgi.dir/src/gfa_to_handle.cpp.o
 
+XG_OBJ=
+
+
 CXXFLAGS=
 CXXFLAGS += -O3 --std=c++14
 CXXFLAGS += -Xpreprocessor -fopenmp
@@ -55,10 +59,13 @@ CXXFLAGS += -I/opt/local/include/libomp
 all: bin/eval
 
 vg/lib/libvg.a: vg/src/*
-	cd vg && make -j 4
+	cd vg && make -j 8
+
+xg/build/CMakeFiles/xg.dir/src/xg.cpp.o: xg/src/*
+	cd xg && mkdir -p build && cd build && cmake .. && make -j 8
 
 odgi/build/CMakeFiles/odgi.dir/src/graph.cpp.o: odgi/src/*
-	cd odgi && mkdir -p build && cd build && cmake .. && make -j 4
+	cd odgi && mkdir -p build && cd build && cmake .. && make -j 8
 
 bin/eval: src/eval.cpp vg/lib/libvg.a odgi/build/CMakeFiles/odgi.dir/src/graph.cpp.o
 	g++ src/eval.cpp $(INC) $(CXXFLAGS) -c -o obj/eval.o

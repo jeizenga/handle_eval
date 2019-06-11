@@ -7,7 +7,6 @@
 #include "odgi/src/odgi.hpp"
 #include "odgi/src/gfa_to_handle.hpp"
 #include "vg/src/vg.hpp"
-#include "vg/src/xg.hpp"
 #include "vg/src/handle.hpp"
 #include "vg/src/convert_handle.hpp"
 #include "vg/src/packed_graph.hpp"
@@ -22,7 +21,7 @@ using namespace handlegraph;
 using namespace odgi;
 
 void help_me(char** argv) {
-    cerr << "usage: " << argv[0] << " eval [test_type] [convert_type] input_file" << endl;
+    cerr << "usage: " << argv[0] << " [test_type] [convert_type] input_file" << endl;
 }
 
 
