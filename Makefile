@@ -40,7 +40,7 @@ INC+=-I /opt/local/include/cairo
 INC+=-I /opt/local/include/glib-2.0 -I/opt/local/lib/glib-2.0/include
 
 ODGI_OBJ=
-ODGI_OBJ+=odgi/build/CMakeFiles/odgi.dir/src/graph.cpp.o
+ODGI_OBJ+=odgi/build/CMakeFiles/odgi.dir/src/odgi.cpp.o
 ODGI_OBJ+=odgi/build/CMakeFiles/odgi.dir/src/crash.cpp.o
 ODGI_OBJ+=odgi/build/CMakeFiles/odgi.dir/src/node.cpp.o
 ODGI_OBJ+=odgi/build/CMakeFiles/odgi.dir/src/position.cpp.o
@@ -51,7 +51,7 @@ CXXFLAGS += -O3 --std=c++14
 CXXFLAGS += -Xpreprocessor -fopenmp
 CXXFLAGS += -I/opt/local/include/libomp
 
-all: bin/project
+all: bin/eval
 
 vg/lib/libvg.a: vg/src/*
 	cd vg && make -j 4
@@ -59,10 +59,9 @@ vg/lib/libvg.a: vg/src/*
 odgi/build/CMakeFiles/odgi.dir/src/graph.cpp.o: odgi/src/*
 	cd odgi && mkdir -p build && cd build && cmake .. && make -j 4
 
-bin/project: src/project.cpp vg/lib/libvg.a odgi/build/CMakeFiles/odgi.dir/src/graph.cpp.o
-	g++ src/project.cpp $(INC) $(CXXFLAGS) -c -o obj/project.o
-	g++ obj/project.o $(ODGI_OBJ) $(FINDLIB) $(LIB) $(CXXFLAGS) -o bin/project
-	g++ obj/project.o ./vg/lib/libvgio.a $(ODGI_OBJ) $(FINDLIB) $(LIB) $(CXXFLAGS) -o bin/project
+bin/eval: src/eval.cpp vg/lib/libvg.a odgi/build/CMakeFiles/odgi.dir/src/graph.cpp.o
+	g++ src/eval.cpp $(INC) $(CXXFLAGS) -c -o obj/eval.o
+	g++ obj/eval.o $(ODGI_OBJ) $(FINDLIB) $(LIB) $(CXXFLAGS) -o bin/eval
 
 -include pre-build
 
