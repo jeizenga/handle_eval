@@ -86,7 +86,7 @@ void convert_graphs_test(string& output_format, string& input_file, bool make_se
         graph_t og;
         convert_path_handle_graph(&graph, &og);
         if (make_serialized){
-            og.opimize();
+            og.optimize();
             og.serialize(cout);
         }
     }
@@ -122,7 +122,7 @@ void test_from_serialized(string& serlialized_type, string& input_file, string& 
     VG* vg_graph = nullptr;
     PackedGraph* pg  = nullptr;
     HashGraph* hg = nullptr;
-    graph_t og = nullptr;
+    graph_t* og = nullptr;
     
     
     PathHandleGraph* test_graph = nullptr;
@@ -145,7 +145,7 @@ void test_from_serialized(string& serlialized_type, string& input_file, string& 
     }
     else if (og_in){
         og = new graph_t();
-        og->deserialize(in);
+        og->load(in);
         test_graph = og;
     }
     
