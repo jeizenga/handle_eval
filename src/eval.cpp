@@ -99,19 +99,19 @@ void test_from_serialized(string& serlialized_type, string& input_file, string& 
     bool hg_in = false;
     bool og_in = false;
     
-    if (convert_type == "none") {
+    if (serlialized_type == "none") {
         quit_in = true;
     }
-    else if (convert_type == "vg") {
+    else if (serlialized_type == "vg") {
         vg_in = true;
     }
-    else if (convert_type == "pg") {
+    else if (serlialized_type == "pg") {
         pg_in = true;
     }
-    else if (convert_type == "hg") {
+    else if (serlialized_type == "hg") {
         hg_in = true;
     }
-    else if (convert_type == "og") {
+    else if (serlialized_type == "og") {
         og_in = true;
     }
     else {
@@ -129,7 +129,7 @@ void test_from_serialized(string& serlialized_type, string& input_file, string& 
     ifstream in(input_file);
     if (vg_in) {
         vg_graph = new VG();
-        vg->deserialize(in);
+        vg_graph->deserialize(in);
         test_graph = vg_graph;
     }
     else if (pg_in){
@@ -201,7 +201,6 @@ void test_from_serialized(string& serlialized_type, string& input_file, string& 
         cerr << "elapsed time: " << elapsed_seconds.count() << endl;
     }
 }
-\
 
 int main(int argc, char** argv) {
     
@@ -222,7 +221,7 @@ int main(int argc, char** argv) {
     bool nodes_per_second = false;
     bool edges_per_second = false;
     bool paths_per_second = false;
-        
+    
     // for converting to another graph
     string test_name = argv[1];
     string convert_type = argv[2];
