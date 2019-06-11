@@ -45,6 +45,7 @@ ODGI_OBJ+=odgi/build/CMakeFiles/odgi.dir/src/crash.cpp.o
 ODGI_OBJ+=odgi/build/CMakeFiles/odgi.dir/src/node.cpp.o
 ODGI_OBJ+=odgi/build/CMakeFiles/odgi.dir/src/position.cpp.o
 ODGI_OBJ+=odgi/build/CMakeFiles/odgi.dir/src/threads.cpp.o
+ODGI_OBJ+=odgi/build/CMakeFiles/odgi.dir/src/gfa_to_handle.cpp.o
 
 CXXFLAGS=
 CXXFLAGS += -O3 --std=c++14
@@ -69,4 +70,4 @@ pre-build:
 	mkdir -p obj
 	mkdir -p bin
 
-.PHONY: pre-build;
+.PHONY: pre-build all;

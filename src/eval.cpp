@@ -5,6 +5,7 @@
 #include <chrono>
 
 #include "odgi/src/odgi.hpp"
+#include "odgi/src/gfa_to_handle.hpp"
 #include "vg/src/vg.hpp"
 #include "vg/src/xg.hpp"
 #include "vg/src/handle.hpp"
@@ -12,7 +13,6 @@
 #include "vg/src/packed_graph.hpp"
 #include "vg/src/hash_graph.hpp"
 #include <vg/io/vpkg.hpp>
-
 
 
 using namespace std;
@@ -28,16 +28,12 @@ void help_me(char** argv) {
 
 void convert_graphs_test(string& output_format, string& input_file, bool make_serialized){
     
-    bool quit_out = false;
     bool vg_out = false;
     bool pg_out = false;
     bool hg_out = false;
     bool og_out = false;
     
-    if (output_format == "none") {
-        quit_out = true;
-    }
-    else if (output_format == "vg") {
+    if (output_format == "vg") {
         vg_out = true;
     }
     else if (output_format == "pg") {
@@ -53,14 +49,10 @@ void convert_graphs_test(string& output_format, string& input_file, bool make_se
         abort();
     }
     
-    // load input graph
-    ifstream in(input_file);
-    VG graph(in);
-    
     // convert into the format we indicated
     if (vg_out){
         VG vg;
-        convert_path_handle_graph(&graph, &vg);
+        gfa_to_handle(input_file, &vg);
         if (make_serialized){
             vg.optimize();
             vg.serialize(cout);
@@ -68,7 +60,7 @@ void convert_graphs_test(string& output_format, string& input_file, bool make_se
     }
     else if (pg_out){
         PackedGraph pg;
-        convert_path_handle_graph(&graph, &pg);
+        gfa_to_handle(input_file, &pg);
         if (make_serialized){
             pg.optimize();
             pg.serialize(cout);
@@ -76,7 +68,7 @@ void convert_graphs_test(string& output_format, string& input_file, bool make_se
     }
     else if (hg_out){
         HashGraph hg;
-        convert_path_handle_graph(&graph, &hg);
+        gfa_to_handle(input_file, &hg);
         if (make_serialized){
             hg.optimize();
             hg.serialize(cout);
@@ -84,7 +76,7 @@ void convert_graphs_test(string& output_format, string& input_file, bool make_se
     }
     else if (og_out){
         graph_t og;
-        convert_path_handle_graph(&graph, &og);
+        gfa_to_handle(input_file, &og);
         if (make_serialized){
             og.optimize();
             og.serialize(cout);
@@ -94,16 +86,12 @@ void convert_graphs_test(string& output_format, string& input_file, bool make_se
 
 void test_from_serialized(string& serlialized_type, string& input_file, string& test_name) {
     
-    bool quit_in = false;
     bool vg_in = false;
     bool pg_in = false;
     bool hg_in = false;
     bool og_in = false;
     
-    if (serlialized_type == "none") {
-        quit_in = true;
-    }
-    else if (serlialized_type == "vg") {
+    if (serlialized_type == "vg") {
         vg_in = true;
     }
     else if (serlialized_type == "pg") {
@@ -123,7 +111,6 @@ void test_from_serialized(string& serlialized_type, string& input_file, string& 
     PackedGraph* pg  = nullptr;
     HashGraph* hg = nullptr;
     graph_t* og = nullptr;
-    
     
     PathHandleGraph* test_graph = nullptr;
     
