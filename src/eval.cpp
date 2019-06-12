@@ -10,8 +10,8 @@
 #include "vg/src/vg.hpp"
 #include "vg/src/handle.hpp"
 #include "vg/src/convert_handle.hpp"
-#include "vg/src/packed_graph.hpp"
-#include "vg/src/hash_graph.hpp"
+#include "sglib/packed_graph.hpp"
+#include "sglib/hash_graph.hpp"
 #include <vg/io/vpkg.hpp>
 
 
@@ -62,7 +62,7 @@ void convert_graphs_test(string& output_format, string& input_file, bool make_se
         }
     }
     else if (pg_out){
-        PackedGraph pg;
+        sglib::PackedGraph pg;
         gfa_to_handle(input_file, &pg);
         if (make_serialized){
             pg.optimize();
@@ -70,7 +70,7 @@ void convert_graphs_test(string& output_format, string& input_file, bool make_se
         }
     }
     else if (hg_out){
-        HashGraph hg;
+        sglib::HashGraph hg;
         gfa_to_handle(input_file, &hg);
         if (make_serialized){
             hg.optimize();
@@ -122,8 +122,8 @@ void test_from_serialized(string& serlialized_type, string& input_file, bool tes
     }
     
     VG* vg_graph = nullptr;
-    PackedGraph* pg  = nullptr;
-    HashGraph* hg = nullptr;
+    sglib::PackedGraph* pg  = nullptr;
+    sglib::HashGraph* hg = nullptr;
     graph_t* og = nullptr;
     xg::XG* xg = nullptr;
     
@@ -136,12 +136,12 @@ void test_from_serialized(string& serlialized_type, string& input_file, bool tes
         test_graph = vg_graph;
     }
     else if (pg_in){
-        pg = new PackedGraph();
+        pg = new sglib::PackedGraph();
         pg->deserialize(in);
         test_graph = pg;
     }
     else if (hg_in){
-        hg = new HashGraph();
+        hg = new sglib::HashGraph();
         hg->deserialize(in);
         test_graph = hg;
     }
