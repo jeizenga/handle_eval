@@ -16,9 +16,7 @@
 
 
 using namespace std;
-using namespace vg;
 using namespace handlegraph;
-using namespace odgi;
 
 void help_me(char** argv) {
     cerr << "usage: " << argv[0] << " [test_type] [convert_type] input_file" << endl;
@@ -54,8 +52,8 @@ void convert_graphs_test(string& output_format, string& input_file, bool make_se
     
     // convert into the format we indicated
     if (vg_out){
-        VG vg;
-        gfa_to_handle(input_file, &vg);
+        vg::VG vg;
+        odgi::gfa_to_handle(input_file, &vg);
         if (make_serialized){
             vg.optimize();
             vg.serialize(cout);
@@ -63,7 +61,7 @@ void convert_graphs_test(string& output_format, string& input_file, bool make_se
     }
     else if (pg_out){
         sglib::PackedGraph pg;
-        gfa_to_handle(input_file, &pg);
+        odgi::gfa_to_handle(input_file, &pg);
         if (make_serialized){
             pg.optimize();
             pg.serialize(cout);
@@ -71,15 +69,15 @@ void convert_graphs_test(string& output_format, string& input_file, bool make_se
     }
     else if (hg_out){
         sglib::HashGraph hg;
-        gfa_to_handle(input_file, &hg);
+        odgi::gfa_to_handle(input_file, &hg);
         if (make_serialized){
             hg.optimize();
             hg.serialize(cout);
         }
     }
     else if (og_out){
-        graph_t og;
-        gfa_to_handle(input_file, &og);
+        odgi::graph_t og;
+        odgi::gfa_to_handle(input_file, &og);
         if (make_serialized){
             og.optimize();
             og.serialize(cout);
@@ -121,17 +119,17 @@ void test_from_serialized(string& serlialized_type, string& input_file, bool tes
         abort();
     }
     
-    VG* vg_graph = nullptr;
+    vg::VG* vg_graph = nullptr;
     sglib::PackedGraph* pg  = nullptr;
     sglib::HashGraph* hg = nullptr;
-    graph_t* og = nullptr;
+    odgi::graph_t* og = nullptr;
     xg::XG* xg = nullptr;
     
     PathHandleGraph* test_graph = nullptr;
     
     ifstream in(input_file);
     if (vg_in) {
-        vg_graph = new VG();
+        vg_graph = new vg::VG();
         vg_graph->deserialize(in);
         test_graph = vg_graph;
     }
@@ -146,7 +144,7 @@ void test_from_serialized(string& serlialized_type, string& input_file, bool tes
         test_graph = hg;
     }
     else if (og_in){
-        og = new graph_t();
+        og = new odgi::graph_t();
         og->load(in);
         test_graph = og;
     }
