@@ -16,7 +16,6 @@
 
 
 using namespace std;
-using namespace xg;
 using namespace vg;
 using namespace handlegraph;
 using namespace odgi;
@@ -87,7 +86,7 @@ void convert_graphs_test(string& output_format, string& input_file, bool make_se
         }
     }
     else if (xg_out){
-        XG xg;
+        xg::XG xg;
         xg.from_gfa(input_file);
         if (make_serialized){
             xg.serialize(cout);
@@ -126,7 +125,7 @@ void test_from_serialized(string& serlialized_type, string& input_file, bool tes
     PackedGraph* pg  = nullptr;
     HashGraph* hg = nullptr;
     graph_t* og = nullptr;
-    XG* xg = nullptr;
+    xg::XG* xg = nullptr;
     
     PathHandleGraph* test_graph = nullptr;
     
@@ -152,7 +151,7 @@ void test_from_serialized(string& serlialized_type, string& input_file, bool tes
         test_graph = og;
     }
     else if (og_in){
-        xg = new XG();
+        xg = new xg::XG();
         xg->load(in);
         test_graph = xg;
     }
