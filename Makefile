@@ -49,7 +49,7 @@ ODGI_OBJ+=odgi/build/CMakeFiles/odgi.dir/src/threads.cpp.o
 ODGI_OBJ+=odgi/build/CMakeFiles/odgi.dir/src/gfa_to_handle.cpp.o
 
 XG_OBJ=
-
+XG_OBJ+=xg/build/CMakeFiles/ips4o.dir/src/xg.cpp.o
 
 CXXFLAGS=
 CXXFLAGS += -O3 --std=c++14
@@ -69,7 +69,7 @@ odgi/build/CMakeFiles/odgi.dir/src/graph.cpp.o: odgi/src/*
 
 bin/eval: src/eval.cpp vg/lib/libvg.a odgi/build/CMakeFiles/odgi.dir/src/graph.cpp.o xg/build/CMakeFiles/xg.dir/src/xg.cpp.o
 	g++ src/eval.cpp $(INC) $(CXXFLAGS) -c -o obj/eval.o
-	g++ obj/eval.o $(ODGI_OBJ) $(FINDLIB) $(LIB) $(CXXFLAGS) -o bin/eval
+	g++ obj/eval.o $(ODGI_OBJ) $(XG_OBJ) $(FINDLIB) $(LIB) $(CXXFLAGS) -o bin/eval
 
 -include pre-build
 
