@@ -7,3 +7,6 @@
 [submodule "xg"]
 	path = xg
 	url = https://github.com/vgteam/xg.git
+[submodule "sglib-easy"]
+	path = sglib-easy
+	url = https://github.com/vgteam/sglib-easy.git

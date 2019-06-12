@@ -1,18 +1,22 @@
+CWD=$(shell pwd)
+
 
 FINDLIB=
-FINDLIB+=-L ./vg/lib
+FINDLIB+=-L lib
+FINDLIB+=-L vg/lib
 FINDLIB+=-L /usr/lib
 FINDLIB+=-L /usr/local/lib
 FINDLIB+=-L /opt/local/lib
 FINDLIB+=-L /opt/local/lib/libomp
 
 LIB=
-LIB+=-lvg -lvgio
+LIB+=-lvg -lvgio -lsglib
 LIB+=-lvcflib -lgssw -lssw -lprotobuf -lsublinearLS -lhts -ldeflate -lpthread -ljansson -lncurses -lgcsa2 -lgbwt -ldivsufsort -ldivsufsort64 -lvcfh -lgfakluge -lraptor2 -lsdsl -lpinchesandcacti -l3edgeconnected -lsonlib -lfml -llz4 -lstructures -lvw -lboost_program_options -lallreduce -lz -lbz2 -llzma -lhandlegraph -lomp -lstdc++
-LIB+=-lcairo -lz -lgobject-2.0 -lffi -lglib-2.0 -lpcre  -liconv -lpixman-1 -lfontconfig -liconv -lexpat -luuid -lfreetype -lbz2 -lpng16 -lz -lX11-xcb -lxcb-render -lXrender -lXext -lX11 -lxcb -lXau -lXdmcp -ldl -llzma -lrocksdb  -lsnappy -lz -lbz2 -llz4 
+LIB+=-lcairo -lz -lgobject-2.0 -lffi -lglib-2.0 -lpcre  -liconv -lpixman-1 -lfontconfig -liconv -lexpat -luuid -lfreetype -lbz2 -lpng16 -lz -lX11-xcb -lxcb-render -lXrender -lXext -lX11 -lxcb -lXau -lXdmcp -ldl -llzma -lrocksdb  -lsnappy -lz -lbz2 -llz4
 
 INC=
 INC+=-I .
+INC+=-I include/
 INC+=-I odgi/build/dynamic-prefix/src/dynamic/include
 INC+=-I odgi/build/gfakluge-prefix/src/gfakluge/src
 INC+=-I odgi/build/sdsl-lite-prefix/src/sdsl-lite/src
@@ -51,14 +55,16 @@ ODGI_OBJ+=odgi/build/CMakeFiles/odgi.dir/src/threads.cpp.o
 ODGI_OBJ+=odgi/build/CMakeFiles/odgi.dir/src/gfa_to_handle.cpp.o
 
 XG_OBJ=
-XG_OBJ+=xg/build/CMakeFiles/ips4o.dir/src/xg.cpp.o
+XG_OBJ+=xg/build/CMakeFiles/xg.dir/src/xg.cpp.o
 
 CXXFLAGS=
 CXXFLAGS += -O3 --std=c++14
 CXXFLAGS += -Xpreprocessor -fopenmp
-CXXFLAGS += -I/opt/local/include/libomp
 
 all: bin/eval
+
+lib/libsglib.a: sglib-easy/sglib/src/* sglib-easy/sglib/include/*
+	cd sglib-easy && make -j 8 && INSTALL_PREFIX=$(CWD) make install
 
 vg/lib/libvg.a: vg/src/*
 	cd vg && make -j 8
@@ -69,7 +75,7 @@ xg/build/CMakeFiles/xg.dir/src/xg.cpp.o: xg/src/*
 odgi/build/CMakeFiles/odgi.dir/src/graph.cpp.o: odgi/src/*
 	cd odgi && mkdir -p build && cd build && cmake .. && make -j 8
 
-bin/eval: src/eval.cpp vg/lib/libvg.a odgi/build/CMakeFiles/odgi.dir/src/graph.cpp.o xg/build/CMakeFiles/xg.dir/src/xg.cpp.o
+bin/eval: src/eval.cpp lib/libsglib.a vg/lib/libvg.a odgi/build/CMakeFiles/odgi.dir/src/graph.cpp.o xg/build/CMakeFiles/xg.dir/src/xg.cpp.o
 	g++ src/eval.cpp $(INC) $(CXXFLAGS) -c -o obj/eval.o
 	g++ obj/eval.o $(ODGI_OBJ) $(XG_OBJ) $(FINDLIB) $(LIB) $(CXXFLAGS) -o bin/eval
 
