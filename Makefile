@@ -7,7 +7,7 @@ FINDLIB+=-L /opt/local/lib
 FINDLIB+=-L /opt/local/lib/libomp
 
 LIB=
-LIB+=-lvg -lvgio
+LIB+=-lvg -lvgio -latomic
 LIB+=-lvcflib -lgssw -lssw -lprotobuf -lsublinearLS -lhts -ldeflate -lpthread -ljansson -lncurses -lgcsa2 -lgbwt -ldivsufsort -ldivsufsort64 -lvcfh -lgfakluge -lraptor2 -lsdsl -lpinchesandcacti -l3edgeconnected -lsonlib -lfml -llz4 -lstructures -lvw -lboost_program_options -lallreduce -lz -lbz2 -llzma -lhandlegraph -lomp -lstdc++
 LIB+=-lcairo -lz -lgobject-2.0 -lffi -lglib-2.0 -lpcre  -liconv -lpixman-1 -lfontconfig -liconv -lexpat -luuid -lfreetype -lbz2 -lpng16 -lz -lX11-xcb -lxcb-render -lXrender -lXext -lX11 -lxcb -lXau -lXdmcp -ldl -llzma -lrocksdb  -lsnappy -lz -lbz2 -llz4 
 
@@ -51,10 +51,10 @@ ODGI_OBJ+=odgi/build/CMakeFiles/odgi.dir/src/threads.cpp.o
 ODGI_OBJ+=odgi/build/CMakeFiles/odgi.dir/src/gfa_to_handle.cpp.o
 
 XG_OBJ=
-XG_OBJ+=xg/build/CMakeFiles/ips4o.dir/src/xg.cpp.o
+XG_OBJ+=xg/build/CMakeFiles/xg.dir/src/xg.cpp.o
 
 CXXFLAGS=
-CXXFLAGS += -O3 --std=c++14
+CXXFLAGS += -O3 --std=c++14 -march=native
 CXXFLAGS += -Xpreprocessor -fopenmp
 CXXFLAGS += -I/opt/local/include/libomp
 
