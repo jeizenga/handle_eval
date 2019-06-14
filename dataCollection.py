@@ -4,83 +4,100 @@ import os
 import argparse
 import subprocess
 
+
+
 class resultMaker:
-    def __init__(self,  testFileDir, outputFile):
+    def __init__(self, testFileDir, outputFile):
         self.outputFile = outputFile
         self.testFileDir = testFileDir
         self.numberOfIterations = 5
-        self.numberOfGraphTypes = 4
-        # self.numberOfTestTypes = 1
+        self.graphTypes = ["vg", "hg", "pg", "og", "xg"]
+        self.testTypes = ["convert", "serialize", "deserialize", "access"]
 
     def runFiles(self):
         with open(self.outputFile, "w") as outputFile:
+            
             for i in range(0,self.numberOfIterations):
-                for fileName in os.listdir(self.testFileDir):
-                    for test in range(0, 2):
-                        for graph in range(1, self.numberOfGraphTypes):
-                            rawStats = self.getStatistics(test, graph, self.testFileDir, fileName, test)
-                            timeMemStats = self.parseData(rawStats)
-                            outputFile.write(fileName)
-                            outputFile.write("\t")
-                            outputFile.write(str(test))
-                            outputFile.write("\t")
-                            outputFile.write(str(graph))
-                            outputFile.write("\t")
-                            for stat in timeMemStats:
-                                outputFile.write(str(stat))
-                                outputFile.write("\t")
-                            outputFile.write("\n")
-            for i in range(0, self.numberOfIterations):
-                for fileName in os.listdir(self.testFileDir+"created/"):
-                    for test in range(2, 6):
-                        graphName = fileName[-3:]
-                        if graphName == ".vg":
-                            graphType = 1
-                        elif graphName == ".pg":
-                            graphType = 2
-                        elif graphName == ".hg":
-                            graphType = 3
-                        elif graphName == ".og":
-                            graphType = 4
-
-                        if graphType:
-                            rawStats = self.getStatistics(test, graphType, self.testFileDir+"created/", fileName)
-                            timeMemStats = self.parseData(rawStats)
-                            outputFile.write(fileName)
-                            outputFile.write("\t")
-                            outputFile.write(str(test))
-                            outputFile.write("\t")
-                            outputFile.write(str(graphType))
-                            outputFile.write("\t")
-                            for stat in timeMemStats:
-                                outputFile.write(str(stat))
-                                outputFile.write("\t")
-                            outputFile.write("\n")
+                for graphType in self.graphTypes:
+                    for fileName in os.listdir(self.testFileDir):
+                        if not fileName.endswith(".gfa"):
+                            continue
+                    
+                        constructStats, outputFile = self.getStatistics("serialize", graphType, self.testFileDir, fileName, True)
+                        loadStats, dummy = self.getStatistics("deserialize", graphType, self.testFileDir, outputFile)
+                        accessStats, dummy = self.getStatistics("access", graphType, self.testFileDir, outputFile)
+                    
+                        print("constructStats")
+                        print(constructStats)
+                        print("loadStats")
+                        print(loadStats)
+                        print("accessStats")
+                        print(accessStats)
+                    
+#                    for test in range(0, 2):
+#                        for graph in range(1, self.numberOfGraphTypes):
+#                            timeMemStats = self.parseData(rawStats)
+#                            outputFile.write(fileName)
+#                            outputFile.write("\t")
+#                            outputFile.write(str(test))
+#                            outputFile.write("\t")
+#                            outputFile.write(str(graph))
+#                            outputFile.write("\t")
+#                            for stat in timeMemStats:
+#                                outputFile.write(str(stat))
+#                                outputFile.write("\t")
+#                            outputFile.write("\n")
+#
+#            for i in range(0, self.numberOfIterations):
+#                for fileName in os.listdir(os.path.join(self.testFileDir)):
+#                    for test in range(2, 6):
+#                        graphName = fileName[-3:]
+#                        if graphName == ".vg":
+#                            graphType = 1
+#                        elif graphName == ".pg":
+#                            graphType = 2
+#                        elif graphName == ".hg":
+#                            graphType = 3
+#                        elif graphName == ".og":
+#                            graphType = 4
+#
+#                        if graphType:
+#                            rawStats = self.getStatistics(test, graphType, self.testFileDir, fileName)
+#                            timeMemStats = self.parseData(rawStats)
+#                            outputFile.write(fileName)
+#                            outputFile.write("\t")
+#                            outputFile.write(str(test))
+#                            outputFile.write("\t")
+#                            outputFile.write(str(graphType))
+#                            outputFile.write("\t")
+#                            for stat in timeMemStats:
+#                                outputFile.write(str(stat))
+#                                outputFile.write("\t")
+#                            outputFile.write("\n")
 
 
     def getStatistics(self, testType, graphType, directory, file, serialize=False):
+        
+        assert(graphType in self.graphTypes)
+        assert(testType in self.testTypes)
+        
         print(testType, graphType, directory, file, serialize)
-        print("/usr/bin/time","-l","./bin/project", str(testType), str(graphType), directory+file)
+        print("/usr/bin/time","-v","./bin/project", testType, graphType, os.path.join(directory,file))
+        
+        outName = None
+        
         if serialize:
-            graphName = None
-            if graphType == 1:
-                graphName = ".vg"
-            elif graphType == 2:
-                graphName = ".pg"
-            elif graphType == 3:
-                graphName = ".hg"
-            elif graphType == 4:
-                graphName = ".og"
-
-            if len(graphName)==3:
-                with open(directory+"created/"+file[:-3]+graphName, "w") as outFile:
-                    p = subprocess.Popen( ["/usr/bin/time", "-l", "./bin/project", str(testType), str(graphType), directory + file], stdout=outFile, stderr=subprocess.PIPE, encoding='utf8')
-                    out, err = p.communicate()
+            
+            outName = os.path.basename(file) + "." + graphType
+            
+            with open(os.path.join(directory, outName), "w") as outFile:
+                p = subprocess.Popen( ["/usr/bin/time", "-v", "./bin/project", testType, graphType, os.path.join(directory,file)], stdout=outFile, stderr=subprocess.PIPE, encoding='utf8')
+                out, err = p.communicate()
         else:
-            p = subprocess.Popen( ["/usr/bin/time", "-l", "./bin/project", str(testType), str(graphType), directory + file], stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf8')
+            p = subprocess.Popen( ["/usr/bin/time", "-v", "./bin/project", testType, graphType, os.path.join(directory,file)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf8')
             out, err = p.communicate()
 
-        return err
+        return err, outName
 
 
     def parseData(self, rawStats):
