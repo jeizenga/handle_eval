@@ -23,9 +23,13 @@ class resultMaker:
                         if not fileName.endswith(".gfa"):
                             continue
                     
-                        constructStats, outputFile = self.getStatistics("serialize", graphType, self.testFileDir, fileName, True)
-                        loadStats, dummy = self.getStatistics("deserialize", graphType, self.testFileDir, outputFile)
-                        accessStats, dummy = self.getStatistics("access", graphType, self.testFileDir, outputFile)
+                        constructErr, outputFile = self.getStatistics("serialize", graphType, self.testFileDir, fileName, True)
+                        loadErr, dummy = self.getStatistics("deserialize", graphType, self.testFileDir, outputFile)
+                        accessErr, dummy = self.getStatistics("access", graphType, self.testFileDir, outputFile)
+                    
+                        constructStats = self.parseData(constructErr)
+                        loadStats = self.parseData(loadErr)   
+                        accessStats = self.parseData(accessErr)                      
                     
                         print("constructStats")
                         print(constructStats)
@@ -82,7 +86,7 @@ class resultMaker:
         assert(testType in self.testTypes)
         
         print(testType, graphType, directory, file, serialize)
-        print("/usr/bin/time","-v","./bin/project", testType, graphType, os.path.join(directory,file))
+        print("/usr/bin/time","-v","./bin/eval", testType, graphType, os.path.join(directory,file))
         
         outName = None
         
@@ -91,41 +95,40 @@ class resultMaker:
             outName = os.path.basename(file) + "." + graphType
             
             with open(os.path.join(directory, outName), "w") as outFile:
-                p = subprocess.Popen( ["/usr/bin/time", "-v", "./bin/project", testType, graphType, os.path.join(directory,file)], stdout=outFile, stderr=subprocess.PIPE, encoding='utf8')
-                out, err = p.communicate()
+                p = subprocess.Popen( ["/usr/bin/time", "-v", "./bin/eval", testType, graphType, os.path.join(directory,file)], stdout=outFile, stderr=subprocess.PIPE, encoding='utf8')
+                err = p.stderr.read()
         else:
-            p = subprocess.Popen( ["/usr/bin/time", "-v", "./bin/project", testType, graphType, os.path.join(directory,file)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf8')
+            p = subprocess.Popen( ["/usr/bin/time", "-v", "./bin/eval", testType, graphType, os.path.join(directory,file)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf8')
             out, err = p.communicate()
 
         return err, outName
 
 
     def parseData(self, rawStats):
-        rawStats = str(rawStats).split("\n")
-        numberItems = None
-        accessTime = None
-        for line in rawStats:
-            line = line.rstrip()
-            line = line.split()
-            if len(line) > 3:
-                if line[1] == "real":
-                    realTime = line[0]
-                    usrTime = line[2]
-                    sysTime = line[4]
-                elif line[1] == "maximum" and line[2] == "resident":
-                    memoryUsage = line[0]
-                elif line[0] == "number":
-                    if line[4] == "graph:":
-                        if numberItems:
-                            assert(numberItems == line[-1])
-                            numberItems = line[-1]
-                    elif line[3] == "accessed:":
-                        numberItems = line[-1]
-            if len(line) >2:
-                if line[0] == "elapsed":
-                    accessTime = line[-1]
+        
+        stats = {}
+        
+        gen = (line for line in str(rawStats).split("\n"))
+        for line in gen:
+            line = line.strip().lower()
+            if line.startswith("elapsed (wall clock)"):
+                stats["realTime"] = float(line.split()[-1])
+            elif line.startswith("user time"):
+                stats["usrTime"] = float(line.split()[-1])
+            elif line.startswith("system time"):
+                stats["sysTime"] = float(line.split()[-1])
+            elif line.startswith("maximum resident set size"):
+                stats["memoryUsage"] = float(line.split()[-1])
+            elif line.startswith("number of"):
+                tokens = line.split()
+                accessType = tokens[2]
+                numberItems = int(tokens[-1])
+                # the next line contains the actual time it took
+                accessTime = float(next(gen).strip().split()[-1])
+                
+                stats[accessType] = (numberItems, accessTime)
 
-        return (realTime, usrTime, sysTime, memoryUsage, numberItems, accessTime)
+        return stats
 
 
 
