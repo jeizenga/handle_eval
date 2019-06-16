@@ -3,6 +3,11 @@
 # example usage:
 # python3 createFigures.py -i outputDataCollection  -o figures
 
+# use non-interactive backend for server environment
+# https://stackoverflow.com/questions/37604289/tkinter-tclerror-no-display-name-and-no-display-environment-variable
+import matplotlib
+matplotlib.use("Agg")
+
 import matplotlib.pyplot as plt
 import matplotlib.patches as mplpatches
 import numpy as np
