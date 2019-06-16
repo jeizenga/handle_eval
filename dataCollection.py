@@ -43,18 +43,20 @@ class resultMaker:
                         print(accessStats)
                         
                         # match (roughly) the format that Emily's plotting script expects
-                        outputFile.write("\t".join([fileName, "construct", graphType, constructStats["realTime"],
-                                                    constructStats["usrTime"], constructStats["sysTime"], 
-                                                    constructStats["memoryUsage"], "NA", "NA"]) + "\n")
-                        outputFile.write("\t".join([fileName, "deserialize", graphType, loadStats["realTime"],
-                                                    loadStats["usrTime"], loadStats["sysTime"], 
-                                                    loadStats["memoryUsage"], "NA", "NA"]) + "\n")
+                        
+                        row = [fileName, "construct", graphType, constructStats["realTime"], constructStats["usrTime"], 
+                               constructStats["sysTime"], constructStats["memoryUsage"], "NA", "NA"]
+                        print("\t".join(str(val) for val in row), file = outputFile)
+                        
+                        row = [fileName, "deserialize", graphType, loadStats["realTime"], loadStats["usrTime"], 
+                               loadStats["sysTime"], loadStats["memoryUsage"], "NA", "NA"]
+                        print("\t".join(str(val) for val in row), file = outputFile)
                         
                         for accessType in ["nodes", "edges", "paths"]:
                             numItems, accessTime = accessStats[accessType]
-                            outputFile.write("\t".join([fileName, accessType, graphType, accessStats["realTime"],
-                                                        accessStats["usrTime"], accessStats["sysTime"], 
-                                                        accessStats["memoryUsage"], str(numItems), str(accessTime)]) + "\n")
+                            row = [fileName, accessType, graphType, accessStats["realTime"], accessStats["usrTime"], 
+                                   accessStats["sysTime"], accessStats["memoryUsage"], numItems, accessTime]
+                            print("\t".join(str(val) for val in row), file = outputFile)
                             
                         # clean up the graph we made
                         os.remove(graphFile)
