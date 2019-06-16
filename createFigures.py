@@ -12,11 +12,11 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mplpatches
 import numpy as np
 import argparse
-import random
 import math
 import pandas
 import datetime
 import time
+import os
 
 
 def createFigure(inputFile, outputDirectory):
@@ -75,19 +75,8 @@ def createFigure(inputFile, outputDirectory):
             paths = {}
             print(fileName)
             for graphType in convertFileData["graph type"].unique():
-                graphName = None
-                if graphType == "vg":
-                    graphName = ".vg"
-                elif graphType == "pg":
-                    graphName = ".pg"
-                elif graphType == "hg":
-                    graphName = ".hg"
-                elif graphType == "og":
-                    graphName = ".og"
-                elif graphType == "xg":
-                    graphName = ".xg"
 
-                deserializeFileGraphData = deserializeData.loc[df["file name"] == fileName[:-3]+graphName].loc[df["graph type"] == graphType]
+                deserializeFileGraphData = deserializeData.loc[df["file name"] == fileName].loc[df["graph type"] == graphType]
                 utilize[graphType] = np.mean(deserializeFileGraphData["max memory"])
                 convertFileGraphData  = convertFileData.loc[df["graph type"] == graphType]
                 memory[graphType] = np.mean(convertFileGraphData["max memory"])
@@ -95,7 +84,7 @@ def createFigure(inputFile, outputDirectory):
                 speed[graphType] = [convertFileGraphData["sys"] + convertFileGraphData["usr"]]
 
                 for testType in [3,4,5]:
-                    dataFileGraphData = data[testType].loc[df["file name"] == fileName[:-3] + graphName].loc[df["graph type"] == graphType]
+                    dataFileGraphData = data[testType].loc[df["file name"] == fileName].loc[df["graph type"] == graphType]
                     if testType == 3:
 
                         x = time.strptime(dataFileGraphData["nodes/edges/paths time"].split(',')[0],'%H:%M:%S')
@@ -271,7 +260,7 @@ def createFigure(inputFile, outputDirectory):
             panel4.set_xticklabels(["nodes", "edges", "paths"])
 
             # save plot to output file
-            plt.savefig(outputDirectory+"/"+fileName[:-3]+".png", dpi=600)
+            plt.savefig(os.path.join(outputDirectory, os.path.basename(fileName)+".png"), dpi=600)
 
 
 def argParser():
