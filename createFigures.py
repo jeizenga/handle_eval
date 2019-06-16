@@ -26,11 +26,11 @@ def createFigure(inputFile, outputDirectory):
     deserializeData = []
 
     for testType in df["test type"].unique():
-        if testType == 0:
+        if testType == "construct":
             convertData = df.loc[df['test type'] == testType]
-        if testType == 2:
+        if testType == "deserialize":
             deserializeData = df.loc[df['test type'] == testType]
-        elif testType > 2:
+        else:
             data[testType] = df.loc[df['test type'] == testType]
 
     for fileName in convertData["file name"].unique():
@@ -71,14 +71,16 @@ def createFigure(inputFile, outputDirectory):
             print(fileName)
             for graphType in convertFileData["graph type"].unique():
                 graphName = None
-                if graphType == 1:
+                if graphType == "vg":
                     graphName = ".vg"
-                elif graphType == 2:
+                elif graphType == "pg":
                     graphName = ".pg"
-                elif graphType == 3:
+                elif graphType == "hg":
                     graphName = ".hg"
-                elif graphType == 4:
+                elif graphType == "og":
                     graphName = ".og"
+                elif graphType == "xg":
+                    graphName = ".xg"
 
                 deserializeFileGraphData = deserializeData.loc[df["file name"] == fileName[:-3]+graphName].loc[df["graph type"] == graphType]
                 utilize[graphType] = np.mean(deserializeFileGraphData["max memory"])
