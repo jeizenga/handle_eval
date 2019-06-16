@@ -23,10 +23,14 @@ class resultMaker:
                         if not fileName.endswith(".gfa"):
                             continue
                     
-                        constructErr, outputFile = self.getStatistics("serialize", graphType, self.testFileDir, fileName, True)
-                        loadErr, dummy = self.getStatistics("deserialize", graphType, self.testFileDir, outputFile)
-                        accessErr, dummy = self.getStatistics("access", graphType, self.testFileDir, outputFile)
+                        # construct from GFA and serialize
+                        constructErr, graphFile = self.getStatistics("serialize", graphType, self.testFileDir, fileName, True)
+                        # load from serialized, but do nothing
+                        loadErr, dummy = self.getStatistics("deserialize", graphType, self.testFileDir, graphFile)
+                        # load from serliazed and time accesses to graph features
+                        accessErr, dummy = self.getStatistics("access", graphType, self.testFileDir, graphFile)
                     
+                        # parse the stderr output
                         constructStats = self.parseData(constructErr)
                         loadStats = self.parseData(loadErr)   
                         accessStats = self.parseData(accessErr)                      
@@ -37,6 +41,23 @@ class resultMaker:
                         print(loadStats)
                         print("accessStats")
                         print(accessStats)
+                        
+                        # match (roughly) the format that Emily's plotting script expects
+                        outputFile.write("\t".join([fileName, "construct", graphType, constructStats["realTime"],
+                                                    constructStats["usrTime"], constructStats["sysTime"], 
+                                                    constructStats["memoryUsage"], "NA", "NA"]) + "\n")
+                        outputFile.write("\t".join([fileName, "deserialize", graphType, loadStats["realTime"],
+                                                    loadStats["usrTime"], loadStats["sysTime"], 
+                                                    loadStats["memoryUsage"], "NA", "NA"]) + "\n")
+                        
+                        for accessType in ["nodes", "edges", "paths"]:
+                            numItems, accessTime = accessStats[accessType]
+                            outputFile.write("\t".join([fileName, accessType, graphType, accessStats["realTime"],
+                                                        accessStats["usrTime"], accessStats["sysTime"], 
+                                                        accessStats["memoryUsage"], str(numItems), str(accessTime)]) + "\n")
+                            
+                        # clean up the graph we made
+                        os.remove(graphFile)
                     
 #                    for test in range(0, 2):
 #                        for graph in range(1, self.numberOfGraphTypes):
