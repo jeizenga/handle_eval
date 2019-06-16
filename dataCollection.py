@@ -79,6 +79,12 @@ class resultMaker:
 #                                outputFile.write("\t")
 #                            outputFile.write("\n")
 
+    def parseTime(self, timeStr):
+        tokens = timeStr.split(":")
+        secs = 0.0
+        for i in range(len(tokens)):
+            secs += 60**i * float(tokens[len(tokens) - 1 - i])
+        return secs
 
     def getStatistics(self, testType, graphType, directory, file, serialize=False):
         
@@ -112,11 +118,11 @@ class resultMaker:
         for line in gen:
             line = line.strip().lower()
             if line.startswith("elapsed (wall clock)"):
-                stats["realTime"] = float(line.split()[-1])
+                stats["realTime"] = self.parseTime(line.split()[-1])
             elif line.startswith("user time"):
-                stats["usrTime"] = float(line.split()[-1])
+                stats["usrTime"] = self.parseTime(line.split()[-1])
             elif line.startswith("system time"):
-                stats["sysTime"] = float(line.split()[-1])
+                stats["sysTime"] = self.parseTime(line.split()[-1])
             elif line.startswith("maximum resident set size"):
                 stats["memoryUsage"] = float(line.split()[-1])
             elif line.startswith("number of"):
