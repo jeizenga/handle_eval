@@ -59,7 +59,7 @@ class resultMaker:
                             print("\t".join(str(val) for val in row), file = outputFile)
                             
                         # clean up the graph we made
-                        os.remove(graphFile)
+                        os.remove(os.path.join(self.testFileDir, graphFile))
                     
 #                    for test in range(0, 2):
 #                        for graph in range(1, self.numberOfGraphTypes):
