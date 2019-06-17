@@ -87,11 +87,17 @@ def createFigure(inputFile, outputDirectory):
             for testType in ["nodes", "edges", "paths"]:
                 dataFileGraphData = data[testType].loc[df["file name"] == fileName].loc[df["graph type"] == graphType]
                 if testType == "nodes":
-                    nodes[graphType] = np.array(dataFileGraphData["nodes/edges/paths time"].astype(np.float)) / np.array(dataFileGraphData["nodes/edges/paths"].astype(np.float))
+                    accessTime = np.array(dataFileGraphData["nodes/edges/paths time"].astype(np.float))
+                    accessCount = np.array(dataFileGraphData["nodes/edges/paths"].astype(np.float))
+                    nodes[graphType] = np.divide(accessTime, accessCount, out = np.zeros_like(accessTime), where = (accessCount != 0))
                 elif testType == "edges":
-                    edges[graphType] = np.array(dataFileGraphData["nodes/edges/paths time"].astype(np.float)) / np.array(dataFileGraphData["nodes/edges/paths"].astype(np.float))
+                    accessTime = np.array(dataFileGraphData["nodes/edges/paths time"].astype(np.float))
+                    accessCount = np.array(dataFileGraphData["nodes/edges/paths"].astype(np.float))
+                    edges[graphType] = np.divide(accessTime, accessCount, out = np.zeros_like(accessTime), where = (accessCount != 0))
                 elif testType == "paths":
-                    paths[graphType] = np.array(dataFileGraphData["nodes/edges/paths time"].astype(np.float)) / np.array(dataFileGraphData["nodes/edges/paths"].astype(np.float))
+                    accessTime = np.array(dataFileGraphData["nodes/edges/paths time"].astype(np.float))
+                    accessCount = np.array(dataFileGraphData["nodes/edges/paths"].astype(np.float))
+                    paths[graphType] = np.divide(accessTime, accessCount, out = np.zeros_like(accessTime), where = (accessCount != 0))
 
         # colors of vg, pg, hg, and og
         R = [128/255, 168/255, 67/255,  7/255]
