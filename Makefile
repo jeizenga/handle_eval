@@ -63,16 +63,16 @@ CXXFLAGS += -Xpreprocessor -fopenmp
 
 all: bin/eval
 
-lib/libsglib.a: sglib-easy/sglib/src/* sglib-easy/sglib/include/*
+lib/libsglib.a: $(wildcard sglib-easy/deps/sglib/src/*) $(wildcard sglib-easy/deps/sglib/include/*)
 	cd sglib-easy && make -j 8 && INSTALL_PREFIX=$(CWD) make install
 
-vg/lib/libvg.a: vg/src/*
+vg/lib/libvg.a: $(wildcard vg/src/*)
 	cd vg && make -j 8
 
-xg/build/CMakeFiles/xg.dir/src/xg.cpp.o: xg/src/*
+xg/build/CMakeFiles/xg.dir/src/xg.cpp.o: $(wildcard xg/src/*)
 	cd xg && mkdir -p build && cd build && cmake .. && make -j 8
 
-odgi/build/CMakeFiles/odgi.dir/src/graph.cpp.o: odgi/src/*
+odgi/build/CMakeFiles/odgi.dir/src/graph.cpp.o: $(wildcard odgi/src/*)
 	cd odgi && mkdir -p build && cd build && cmake .. && make -j 8
 
 bin/eval: src/eval.cpp lib/libsglib.a vg/lib/libvg.a odgi/build/CMakeFiles/odgi.dir/src/graph.cpp.o xg/build/CMakeFiles/xg.dir/src/xg.cpp.o
