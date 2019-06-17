@@ -186,9 +186,8 @@ void test_from_serialized(string& serlialized_type, string& input_file, bool tes
         auto path_start = std::chrono::system_clock::now();
         test_graph->for_each_path_handle([&](const path_handle_t& path_handle_1){
             for (handle_t handle : test_graph->scan_path(path_handle_1)) {
-                volatile handle_t temp_handle = handle;
+                path_counter++;
             }
-            path_counter++;
         });
         auto path_end = std::chrono::system_clock::now();
         std::chrono::duration<double> path_elapsed_seconds = path_end - path_start;

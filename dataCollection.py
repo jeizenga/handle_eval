@@ -70,16 +70,22 @@ class resultMaker:
         
         outName = None
         
+        cmd = ["/usr/bin/time", "-v", "./bin/eval", testType, graphType, os.path.join(directory,file)]   
+        
         if serialize:
             
             outName = os.path.basename(file) + "." + graphType
             
             with open(os.path.join(directory, outName), "w") as outFile:
-                p = subprocess.Popen( ["/usr/bin/time", "-v", "./bin/eval", testType, graphType, os.path.join(directory,file)], stdout=outFile, stderr=subprocess.PIPE, encoding='utf8')
-                err = p.stderr.read()
+                p = subprocess.Popen(cmd, stdout=outFile, stderr=subprocess.PIPE, encoding='utf8')
+                out, err = p.communicate()
         else:
-            p = subprocess.Popen( ["/usr/bin/time", "-v", "./bin/eval", testType, graphType, os.path.join(directory,file)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf8')
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf8')
             out, err = p.communicate()
+        
+        if p.returncode != 0:
+            print("Command failed: " + " ".join(cmd), file = sys.stderr)
+            assert(False)
 
         return err, outName
 
