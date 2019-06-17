@@ -148,7 +148,7 @@ void test_from_serialized(string& serlialized_type, string& input_file, bool tes
         og->load(in);
         test_graph = og;
     }
-    else if (og_in){
+    else if (xg_in){
         xg = new xg::XG();
         xg->load(in);
         test_graph = xg;
