@@ -128,19 +128,19 @@ def createFigure(inputFile, outputDirectory):
             width = bins[index + 1] - left - .1
             errorBarLeft = errorBins[index]
 
-            height = memory[index+1]
+            height = memory[graphNumbers[index+1]]
             rectangle1 = mplpatches.Rectangle([left, bottom], width, height,
                                               edgecolor="black",
                                               facecolor=(R[index], G[index], B[index]),
                                               linewidth=.1)
             panel1.add_patch(rectangle1)
-            speedHeight = np.mean(speed[index+1])
+            speedHeight = np.mean(speed[graphNumbers[index+1]])
             rectangle2 = mplpatches.Rectangle([left, bottom], width, speedHeight,
                                               edgecolor="black",
                                               facecolor=(R[index], G[index], B[index]),
                                               linewidth=.1)
             panel2.add_patch(rectangle2)
-            speedStd = np.std(speed[index + 1])
+            speedStd = np.std(speed[graphNumbers[index + 1]])
             errorBar = mplpatches.Rectangle([errorBarLeft, speedHeight-speedStd], errorBarWidth, speedStd*2,
                                               edgecolor="black",
                                               facecolor="black",
@@ -148,7 +148,7 @@ def createFigure(inputFile, outputDirectory):
             errorBars.append(speedHeight+speedStd)
             panel2.add_patch(errorBar)
 
-            utilizeHeight = utilize[index + 1]
+            utilizeHeight = utilize[graphNumbers[index + 1]]
             rectangle3 = mplpatches.Rectangle([left, bottom], width,
                                               utilizeHeight,
                                               edgecolor="black",
