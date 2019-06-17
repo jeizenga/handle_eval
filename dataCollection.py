@@ -3,7 +3,7 @@
 import os
 import argparse
 import subprocess
-
+import sys
 
 
 class resultMaker:
@@ -11,7 +11,7 @@ class resultMaker:
         self.outputFile = outputFile
         self.testFileDir = testFileDir
         self.numberOfIterations = 5
-        self.graphTypes = ["vg", "hg", "pg", "og", "xg"]
+        self.graphTypes = ["vg", "hg", "pg", "og"]#, "xg"]
         self.testTypes = ["convert", "serialize", "deserialize", "access"]
 
     def runFiles(self):
@@ -85,6 +85,7 @@ class resultMaker:
         
         if p.returncode != 0:
             print("Command failed: " + " ".join(cmd), file = sys.stderr)
+            print("stderr:\n" + err, file = sys.stderr)
             assert(False)
 
         return err, outName
