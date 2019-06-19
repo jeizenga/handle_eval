@@ -17,11 +17,12 @@ class resultMaker:
     def runFiles(self):
         with open(self.outputFile, "w") as outputFile:
             for fileName in os.listdir(self.testFileDir):
+                if not fileName.endswith(".gfa"):
+                    continue
+
                 print("testing on " + fileName, file = sys.stderr)
                 for graphType in self.graphTypes:
                     for i in range(0,self.numberOfIterations):
-                        if not fileName.endswith(".gfa"):
-                            continue
                     
                         # construct from GFA and serialize
                         constructErr, graphFile = self.getStatistics("serialize", graphType, self.testFileDir, fileName, True)
