@@ -100,10 +100,10 @@ def createFigure(inputFile, outputDirectory):
                     paths[graphType] = np.divide(accessTime, accessCount, out = np.zeros_like(accessTime), where = (accessCount != 0))
 
         # colors of vg, pg, hg, and og
-        R = [128/255, 168/255, 67/255,  7/255]
-        G = [171/255, 221/255, 162/255, 104/255]
-        B = [134/255, 181/255, 202/255, 172/255]
-        graphNumbers = {1:"vg", 2:"pg", 3:"hg", 4:"og"}
+        R = [128/255, 168/255, 67/255,  7/255,   114/255]
+        G = [171/255, 221/255, 162/255, 104/255, 80/255]
+        B = [134/255, 181/255, 202/255, 172/255, 149/255]
+        graphNumbers = {1:"vg", 2:"pg", 3:"hg", 4:"og", 5:"xg"}
         #graphNumbers = {1: "vg", 2: "pg", 3: "hg"}
 
         # legend
