@@ -184,10 +184,10 @@ void test_from_serialized(string& serlialized_type, string& input_file, bool tes
         
         int path_counter = 0;
         auto path_start = std::chrono::system_clock::now();
-        test_graph->for_each_path_handle([&](const path_handle_t& path_handle_1){
-            for (handle_t handle : test_graph->scan_path(path_handle_1)) {
+        test_graph->for_each_path_handle([&](const path_handle_t& path_handle) {
+            test_graph->for_each_step_in_path(path_handle, [&](const step_handle_t& step) {
                 path_counter++;
-            }
+            });
         });
         auto path_end = std::chrono::system_clock::now();
         std::chrono::duration<double> path_elapsed_seconds = path_end - path_start;
@@ -223,5 +223,6 @@ int main(int argc, char** argv) {
     }
     else {
         cerr << "available tests: convert, serialize, deserialize, access" << endl;
+        return 1;
     }
 }
