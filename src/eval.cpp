@@ -6,7 +6,7 @@
 
 #include "odgi/src/odgi.hpp"
 #include "odgi/src/gfa_to_handle.hpp"
-#include "odgi/algorithms/topological_sort.hpp"
+#include "odgi/src/algorithms/topological_sort.hpp"
 #include "xg/src/xg.hpp"
 #include "vg/src/vg.hpp"
 #include "vg/src/handle.hpp"
@@ -81,7 +81,7 @@ void convert_graphs_test(string& output_format, string& input_file, bool make_se
         odgi::gfa_to_handle(input_file, &og);
         if (make_serialized){
             // TODO: this should really be the default optimize, but for now we just include it
-            og.apply_ordering(algorithms::topological_order(&og), true);
+            og.apply_ordering(odgi::algorithms::topological_order(&og), true);
             og.serialize(cout);
         }
     }
