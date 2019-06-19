@@ -16,9 +16,10 @@ class resultMaker:
 
     def runFiles(self):
         with open(self.outputFile, "w") as outputFile:
-            for i in range(0,self.numberOfIterations):
+            for fileName in os.listdir(self.testFileDir):
+                print("testing on " + fileName, file = sys.stderr)
                 for graphType in self.graphTypes:
-                    for fileName in os.listdir(self.testFileDir):
+                    for i in range(0,self.numberOfIterations):
                         if not fileName.endswith(".gfa"):
                             continue
                     
