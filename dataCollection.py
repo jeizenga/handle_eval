@@ -22,6 +22,7 @@ class resultMaker:
 
                 print("testing on " + fileName, file = sys.stderr)
                 for graphType in self.graphTypes:
+                    print("\ttesting graph type " + graphType, file = sys.stderr)
                     for i in range(0,self.numberOfIterations):
                     
                         # construct from GFA and serialize
