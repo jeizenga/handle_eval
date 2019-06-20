@@ -17,7 +17,7 @@ import pandas
 import datetime
 import time
 import os
-
+import sys
 
 def createFigure(inputFile, outputDirectory):
     # parse data
@@ -74,13 +74,13 @@ def createFigure(inputFile, outputDirectory):
         nodes = {}
         edges = {}
         paths = {}
-        print(fileName)
+        print("making plots for " + fileName, file = sys.stderr)
         for graphType in convertFileData["graph type"].unique():
 
             deserializeFileGraphData = deserializeData.loc[df["file name"] == fileName].loc[df["graph type"] == graphType]
-            utilize[graphType] = np.mean(deserializeFileGraphData["max memory"])
+            utilize[graphType] = np.mean(deserializeFileGraphData["max memory"]) / 1024 # convert KB -> MB
             convertFileGraphData  = convertFileData.loc[df["graph type"] == graphType]
-            memory[graphType] = np.mean(convertFileGraphData["max memory"])
+            memory[graphType] = np.mean(convertFileGraphData["max memory"]) / 1024 # convert KB -> MB
             # speed[graphType] = np.mean(convertFileGraphData["sys"] + convertFileGraphData["usr"])
             speed[graphType] = [convertFileGraphData["sys"] + convertFileGraphData["usr"]]
 
@@ -100,9 +100,9 @@ def createFigure(inputFile, outputDirectory):
                     paths[graphType] = np.divide(accessTime, accessCount, out = np.zeros_like(accessTime), where = (accessCount != 0))
 
         # colors of vg, pg, hg, and og
-        R = [128/255, 168/255, 67/255,  7/255,   114/255]
-        G = [171/255, 221/255, 162/255, 104/255, 80/255]
-        B = [134/255, 181/255, 202/255, 172/255, 149/255]
+        R = [128/255, 168/255, 67/255,  7/255,   128/255]
+        G = [171/255, 221/255, 162/255, 104/255, 112/255]
+        B = [134/255, 181/255, 202/255, 172/255, 171/255]
         graphNumbers = {1:"vg", 2:"pg", 3:"hg", 4:"og", 5:"xg"}
         #graphNumbers = {1: "vg", 2: "pg", 3: "hg"}
 
@@ -120,7 +120,7 @@ def createFigure(inputFile, outputDirectory):
             panel5.add_patch(rectangle1)
             panel5.text(left+ width + .15, bottom+(height/2), graphNumbers[index+1], va="center", ha="center")
         panel5.set_ylim(0, 1)
-        panel5.set_xlim(0, 4)
+        panel5.set_xlim(0, len(graphNumbers))
 
         # panel 1, 2, 3
         bins = np.arange(0, len(memory)+1, 1)
@@ -170,8 +170,8 @@ def createFigure(inputFile, outputDirectory):
         roundedNumber = special_round(max(memory.values()) * 1.1, 10**power)
         panel1.set_yticks([a for a in np.linspace(0, roundedNumber, 5)])
         panel1.set_yticklabels([a for a in np.linspace(0, roundedNumber/10**power,  5)])
-        panel1.set_ylabel("Maximum Memory ($10^{" + str(power) + "}$ bytes)", )
-        panel1.set_title("Construction Memory Usage")
+        panel1.set_ylabel("Maximum Memory ($10^{" + str(power) + "}$ MB)", )
+        panel1.set_title("Construction Memory")
         # offset = panel1.get_yaxis().get_offset_text()
         # print(offset, offset.get_text())
         # panel1.set_ylabel('{0} {1}'.format(panel1.get_ylabel(), offset))
@@ -185,7 +185,7 @@ def createFigure(inputFile, outputDirectory):
                            )
         panel2.set_ylim(0, max(errorBars) * 1.05)
         panel2.set_xlim(0, max(bins))
-        panel2.set_ylabel("Time (CPU cycles)")
+        panel2.set_ylabel("Time (seconds)")
         # modify tick marks/labeling
         panel2.tick_params(axis="both", which="both",
                            bottom=False, labelbottom=False,
@@ -202,9 +202,9 @@ def createFigure(inputFile, outputDirectory):
         roundedNumber = special_round(max(utilize.values()) * 1.1, 10 ** power)
         panel3.set_yticks([a for a in np.linspace(0, roundedNumber, 5)])
         panel3.set_yticklabels([a for a in np.linspace(0, roundedNumber / 10 ** power, 5)])
-        panel3.set_ylabel("Maximum Memory ($10^{" + str(power) + "}$ bytes)", )
-        panel2.set_title("Construction Speed Usage")
-        panel3.set_title("Utilization Memory Usage")
+        panel3.set_ylabel("Maximum Memory ($10^{" + str(power) + "}$ MB)", )
+        panel2.set_title("Construction Time")
+        panel3.set_title("Load from Disk Memory")
         # modify tick marks/labeling
         panel3.tick_params(axis="both", which="both",
                            bottom=False, labelbottom=False,
@@ -215,9 +215,12 @@ def createFigure(inputFile, outputDirectory):
 
 
         # panel 4
-        bins = np.arange(0, len(nodes) *3 + 1, 1)
-        errorBarWidth = .04
-        errorBins = [b + .5 - errorBarWidth / 2 for b in bins]
+        gap = .35
+        lefts = [gap * (i // len(nodes) + 1) + i  for i in range(len(nodes) * 3)]
+        width = 1
+        bins = np.arange(0, len(nodes) * 3 + 1, 1)
+        errorBarWidth = .06
+        errorBins = [b + .5 - errorBarWidth / 2 for b in lefts]
         errorBars = []
         counter = 0
 
@@ -225,8 +228,7 @@ def createFigure(inputFile, outputDirectory):
             nepIndexing = 0
             for index in range(len(nodes) *(counter), len(nodes) * (counter+1)):
                 bottom = 0
-                left = bins[index]
-                width = bins[index + 1] - left
+                left = lefts[index]
                 height = np.mean(nep[graphNumbers[nepIndexing +1]])
                 errorBarLeft = errorBins[index]
 
@@ -249,7 +251,7 @@ def createFigure(inputFile, outputDirectory):
                 nepIndexing += 1
             counter += 1
         panel4.set_ylim(0, max(errorBars) * 1.1)
-        panel4.set_xlim(0, max(bins))
+        panel4.set_xlim(0, max(lefts) + width + gap)
         panel4.set_ylabel("Time per Access (seconds)")
         panel4.set_title("Access Time")
         # modify tick marks/labeling
@@ -259,7 +261,7 @@ def createFigure(inputFile, outputDirectory):
                            right=False, labelright=False,
                            top=False, labeltop=False
                            )
-        panel4.set_xticks([ i + len(nodes)/2 for i in  np.arange(0, len(nodes)* (counter), 3)])
+        panel4.set_xticks([np.mean(lefts[i*len(nodes):(i+1)*len(nodes)]) + width/2 for i in range(3)])
         panel4.set_xticklabels(["nodes", "edges", "paths"])
 
         # save plot to output file
