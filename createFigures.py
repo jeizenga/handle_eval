@@ -147,12 +147,12 @@ def createFigure(inputFile, outputDirectory):
                                               linewidth=.1)
             panel2.add_patch(rectangle2)
             speedStd = np.std(speed[graphNumbers[index + 1]])
-            errorBar = mplpatches.Rectangle([errorBarLeft, speedHeight-speedStd], errorBarWidth, speedStd*2,
-                                              edgecolor="black",
-                                              facecolor="black",
-                                              linewidth=.1)
-            errorBars.append(speedHeight+speedStd)
-            panel2.add_patch(errorBar)
+#            errorBar = mplpatches.Rectangle([errorBarLeft, speedHeight-speedStd], errorBarWidth, speedStd*2,
+#                                              edgecolor="black",
+#                                              facecolor="black",
+#                                              linewidth=.1)
+#            errorBars.append(speedHeight+speedStd)
+#            panel2.add_patch(errorBar)
 
             utilizeHeight = utilize[graphNumbers[index + 1]]
             rectangle3 = mplpatches.Rectangle([left, bottom], width,
@@ -240,13 +240,13 @@ def createFigure(inputFile, outputDirectory):
                 panel4.add_patch(rectangle1)
 
                 speedStd = np.std(nep[graphNumbers[nepIndexing +1]])
-                errorBar = mplpatches.Rectangle([errorBarLeft, height - speedStd], errorBarWidth,
-                                                speedStd * 2,
-                                                edgecolor="black",
-                                                facecolor="black",
-                                                linewidth=.1)
-                errorBars.append(height + speedStd)
-                panel4.add_patch(errorBar)
+#                errorBar = mplpatches.Rectangle([errorBarLeft, height - speedStd], errorBarWidth,
+#                                                speedStd * 2,
+#                                                edgecolor="black",
+#                                                facecolor="black",
+#                                                linewidth=.1)
+#                errorBars.append(height + speedStd)
+#                panel4.add_patch(errorBar)
 
                 nepIndexing += 1
             counter += 1

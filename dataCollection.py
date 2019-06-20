@@ -10,7 +10,7 @@ class resultMaker:
     def __init__(self, testFileDir, outputFile):
         self.outputFile = outputFile
         self.testFileDir = testFileDir
-        self.numberOfIterations = 5
+        self.numberOfIterations = 1
         self.graphTypes = ["vg", "hg", "pg", "xg", "og"]
         self.testTypes = ["convert", "serialize", "deserialize", "access"]
 
