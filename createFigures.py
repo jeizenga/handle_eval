@@ -10,17 +10,21 @@ import argparse
 import random
 import math
 import pandas
-import datetime
 import time
+import datetime
+from datetime import datetime as dt
+import os
 
 
 def createFigure(inputFile, outputDirectory):
+    # Create output directory if don't exist, where all the figures will be put
+    if not os.path.exists(outputDirectory):
+        os.mkdir(outputDirectory)
+
     # parse data
     data = {}
     df = pandas.read_csv(inputFile,  sep='\t', names=("file name", "test type", "graph type", "real", "usr", "sys", "max memory", "nodes/edges/paths", "nodes/edges/paths time", "blank"))
-
     df = df.drop("blank", axis=1)
-    # print(df)
 
     convertData = []
     deserializeData = []
@@ -89,23 +93,22 @@ def createFigure(inputFile, outputDirectory):
 
                 for testType in [3,4,5]:
                     dataFileGraphData = data[testType].loc[df["file name"] == fileName[:-3] + graphName].loc[df["graph type"] == graphType]
+                    x = [dt.strptime(a, '%M:%S.%f') for a in dataFileGraphData["nodes/edges/paths time"]]
+                    timeSec = [datetime.timedelta(minutes=i.minute, seconds=i.second,  microseconds=i.microsecond).total_seconds()
+                        for i in x]
                     if testType == 3:
-
-                        x = time.strptime(dataFileGraphData["nodes/edges/paths time"].split(',')[0],'%H:%M:%S')
-
-                        nodes[graphType] = [datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()] /np.mean(dataFileGraphData["nodes/edges/paths"].astype(np.float))
-                        print(nodes[graphType])
+                        nodes[graphType] = np.array(timeSec) /np.mean(dataFileGraphData["nodes/edges/paths"].astype(np.float))
                     elif testType ==4:
-                        edges[graphType] = [dataFileGraphData["nodes/edges/paths time"].astype(np.float)] /np.mean(dataFileGraphData["nodes/edges/paths"].astype(np.float))
+                        edges[graphType] = np.array(timeSec) /np.mean(dataFileGraphData["nodes/edges/paths"].astype(np.float))
                     elif testType == 5:
-                        paths[graphType] = [dataFileGraphData["nodes/edges/paths time"].astype(np.float)] /np.mean(dataFileGraphData["nodes/edges/paths"].astype(np.float))
+                        paths[graphType] = np.array(timeSec) /np.mean(dataFileGraphData["nodes/edges/paths"].astype(np.float))
 
             # colors of vg, pg, hg, and og
             R = [128/255,168/255,67/255,7/255]
             G = [171/255,221/255,162/255,104/255]
             B = [134/255,181/255,202/255,172/255]
-            # graphNumbers = {1:"vg", 2:"pg", 3:"hg", 4:"og"}
-            graphNumbers = {1: "vg", 2: "pg", 3: "hg"}
+            graphNumbers = {1:"vg", 2:"pg", 3:"hg", 4:"og"}
+            # graphNumbers = {1: "vg", 2: "pg", 3: "hg"}
 
             # legend
             bins = np.arange(0, len(graphNumbers) + 1, 1)
