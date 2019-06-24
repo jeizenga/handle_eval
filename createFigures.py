@@ -39,10 +39,7 @@ def createFigure(inputFile, outputDirectory):
             data[testType] = df.loc[df['test type'] == testType]
 
     for fileName in convertData["file name"].unique():
-        #TODO: this looks like an issue with the collection script...
-        if fileName == "all.vg" or fileName == "created" or fileName == ".DS_Store":
-            continue
-        
+
         # make the figure
         figure_width = 6.5
         figure_height = 6.5
@@ -99,12 +96,11 @@ def createFigure(inputFile, outputDirectory):
                     accessCount = np.array(dataFileGraphData["nodes/edges/paths"].astype(np.float))
                     paths[graphType] = np.divide(accessTime, accessCount, out = np.zeros_like(accessTime), where = (accessCount != 0))
 
-        # colors of vg, pg, hg, and og
+        # colors of vg, pg, hg, og, and xg
         R = [128/255, 168/255, 67/255,  7/255,   128/255]
         G = [171/255, 221/255, 162/255, 104/255, 112/255]
         B = [134/255, 181/255, 202/255, 172/255, 171/255]
         graphNumbers = {1:"vg", 2:"pg", 3:"hg", 4:"og", 5:"xg"}
-        #graphNumbers = {1: "vg", 2: "pg", 3: "hg"}
 
         # legend
         bins = np.arange(0, len(graphNumbers) + 1, 1)
@@ -127,6 +123,7 @@ def createFigure(inputFile, outputDirectory):
         errorBarWidth = .015
         errorBins = [ b+.5 - errorBarWidth/2 for b in bins]
         errorBars = []
+        speedHeights = []
 
         for index in range(0, len(memory)):
             bottom = 0
@@ -140,13 +137,14 @@ def createFigure(inputFile, outputDirectory):
                                               facecolor=(R[index], G[index], B[index]),
                                               linewidth=.1)
             panel1.add_patch(rectangle1)
-            speedHeight = np.mean(speed[graphNumbers[index+1]])
+            speedHeight = np.mean(list(float(val) for val in speed[graphNumbers[index+1]]))
+            speedHeights.append(speedHeight)
             rectangle2 = mplpatches.Rectangle([left, bottom], width, speedHeight,
                                               edgecolor="black",
                                               facecolor=(R[index], G[index], B[index]),
                                               linewidth=.1)
             panel2.add_patch(rectangle2)
-            speedStd = np.std(speed[graphNumbers[index + 1]])
+#            speedStd = np.std(speed[graphNumbers[index + 1]])
 #            errorBar = mplpatches.Rectangle([errorBarLeft, speedHeight-speedStd], errorBarWidth, speedStd*2,
 #                                              edgecolor="black",
 #                                              facecolor="black",
@@ -183,7 +181,7 @@ def createFigure(inputFile, outputDirectory):
                            right=False, labelright=False,
                            top=False, labeltop=False
                            )
-        panel2.set_ylim(0, max(errorBars) * 1.05)
+        panel2.set_ylim(0, max(errorBars + speedHeights) * 1.05)
         panel2.set_xlim(0, max(bins))
         panel2.set_ylabel("Time (seconds)")
         # modify tick marks/labeling
@@ -222,6 +220,7 @@ def createFigure(inputFile, outputDirectory):
         errorBarWidth = .06
         errorBins = [b + .5 - errorBarWidth / 2 for b in lefts]
         errorBars = []
+        barHeights = []
         counter = 0
 
         for nep in [nodes, edges, paths]:
@@ -230,6 +229,7 @@ def createFigure(inputFile, outputDirectory):
                 bottom = 0
                 left = lefts[index]
                 height = np.mean(nep[graphNumbers[nepIndexing +1]])
+                barHeights.append(height)
                 errorBarLeft = errorBins[index]
 
                 rectangle1 = mplpatches.Rectangle([left, bottom], width,
@@ -250,7 +250,8 @@ def createFigure(inputFile, outputDirectory):
 
                 nepIndexing += 1
             counter += 1
-        panel4.set_ylim(0, max(errorBars) * 1.1)
+        
+        panel4.set_ylim(0, max(errorBars + barHeights) * 1.1)
         panel4.set_xlim(0, max(lefts) + width + gap)
         panel4.set_ylabel("Time per Access (seconds)")
         panel4.set_title("Access Time")
