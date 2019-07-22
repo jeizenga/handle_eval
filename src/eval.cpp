@@ -247,7 +247,7 @@ void test_from_serialized(string& serlialized_type, string& input_file, bool tes
         cerr << "avg edge delta: " << (total_delta / double(num_edges)) << endl;
         
         // is cyclic
-        cerr << "is acyclic: " << !vg::algorithms::is_acyclic(test_graph) << endl;
+        cerr << "is cyclic: " << !vg::algorithms::is_acyclic(test_graph) << endl;
         
         // feedback arc set
         vg::StrandSplitGraph split(test_graph);
