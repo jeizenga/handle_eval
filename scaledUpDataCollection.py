@@ -104,14 +104,17 @@ class resultMaker:
         stats = {}
 
         gen = (line for line in rawErr.split("\n"))
-        elif line.startswith("number of"):
-            tokens = line.split()
-            accessType = tokens[2]
-            numberItems = int(tokens[-1])
-            # the next line contains the actual time it took
-            accessTime = float(next(gen).strip().split()[-1])
-            
-            stats[accessType] = (numberItems, accessTime)
+        for line in gen:
+            if line.startswith("number of"):
+                tokens = line.split()
+                accessType = tokens[2]
+                numberItems = int(tokens[-1])
+                # the next line contains the actual time it took
+                accessTime = float(next(gen).strip().split()[-1])
+                
+                stats[accessType] = (numberItems, accessTime)
+                
+        return stats
 
     def parseTime(self, rawErr):
         
