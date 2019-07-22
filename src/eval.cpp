@@ -267,6 +267,7 @@ void test_from_serialized(string& serlialized_type, string& input_file, bool tes
             });
         });
         cerr << "feedback arc set: " << num_feedback_arcs << endl;
+        cerr << "feedback fraction: " << (double(num_feedback_arcs) / double(num_edges)) << endl;
         
         // max degree
         size_t max_degree = 0;
