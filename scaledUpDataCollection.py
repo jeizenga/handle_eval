@@ -139,7 +139,7 @@ class resultMaker:
         
         stats = {}
         
-        for line in str(rawStats).split("\n"):
+        for line in str(rawErr).split("\n"):
             if line.startswith("node count"):
                 stats["nodeCount"] = int(line.split()[-1])
             elif line.startswith("edge count"):
