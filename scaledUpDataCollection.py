@@ -12,7 +12,7 @@ class resultMaker:
         self.testFileDir = testFileDir
         self.numberOfIterations = 1
         self.graphTypes = ["vg", "hg", "pg", "xg", "og"]
-        self.testTypes = ["convert", "serialize", "deserialize", "access"]
+        self.testTypes = ["convert", "serialize", "deserialize", "access", "stats"]
 
     def runFiles(self):
         with open(self.outputFile, "w") as outputFile:
