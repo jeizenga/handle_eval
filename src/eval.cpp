@@ -3,6 +3,10 @@
 #include <stdio.h>
 #include <iostream>
 #include <chrono>
+#include <unordered_map>
+#include <vector>
+#include <string>
+#include <cmath>
 
 #include "odgi/src/odgi.hpp"
 #include "odgi/src/gfa_to_handle.hpp"
@@ -11,6 +15,9 @@
 #include "vg/src/vg.hpp"
 #include "vg/src/handle.hpp"
 #include "vg/src/convert_handle.hpp"
+#include "vg/src/split_strand_graph.hpp"
+#include "vg/src/algorithms/eades_algorithm.hpp"
+#include "vg/src/algorithms/is_acyclic.hpp"
 #include "sglib/packed_graph.hpp"
 #include "sglib/hash_graph.hpp"
 #include <vg/io/vpkg.hpp>
@@ -22,8 +29,6 @@ using namespace handlegraph;
 void help_me(char** argv) {
     cerr << "usage: " << argv[0] << " [test_type] [convert_type] input_file" << endl;
 }
-
-
 void convert_graphs_test(string& output_format, string& input_file, bool make_serialized){
     
     bool vg_out = false;
@@ -94,7 +99,7 @@ void convert_graphs_test(string& output_format, string& input_file, bool make_se
     }
 }
 
-void test_from_serialized(string& serlialized_type, string& input_file, bool test_accesses) {
+void test_from_serialized(string& serlialized_type, string& input_file, bool test_accesses, bool print_stats) {
     
     bool vg_in = false;
     bool pg_in = false;
@@ -202,6 +207,78 @@ void test_from_serialized(string& serlialized_type, string& input_file, bool tes
         cerr << "number of paths accessed: " << path_counter << endl;
         cerr << "elapsed time: " << path_elapsed_seconds.count() << endl;
     }
+    
+    if (print_stats) {
+        
+        // node count
+        cerr << "node count: " << test_graph->get_node_count() << endl;
+        
+        // edge count
+        size_t num_edges = 0;
+        test_graph->for_each_edge([&](const edge_t& edge) {
+            num_edges++;
+        });
+        cerr << "edge count: " << num_edges << endl;
+        
+        // path count
+        cerr << "path count: " << test_graph->get_path_count() << endl;
+        
+        // path depth
+        size_t total_path_length = 0;
+        test_graph->for_each_path_handle([&](const path_handle_t& path_handle) {
+            total_path_length += test_graph->get_step_count(path_handle);
+        });
+        cerr << "path steps: " << total_path_length << endl;
+        cerr << "avg path depth: " << (double(total_path_length) / double(test_graph->get_node_count())) << endl;
+        
+        // sequence length
+        size_t total_seq_length = 0;
+        test_graph->for_each_handle([&](const handle_t& handle) {
+            total_seq_length += test_graph->get_length(handle);
+        });
+        cerr << "seq length: " << total_seq_length << endl;
+        cerr << "avg seq length: " << (double(total_seq_length) / double(test_graph->get_node_count())) << endl;
+        
+        // avg edge delta
+        double total_delta = 0.0;
+        test_graph->for_each_edge([&](const edge_t& edge) {
+            total_delta += abs(test_graph->get_id(edge.first) - test_graph->get_id(edge.second));
+        });
+        cerr << "avg edge delta: " << (total_delta / double(num_edges)) << endl;
+        
+        // is cyclic
+        cerr << "is acyclic: " << !vg::algorithms::is_acyclic(test_graph) << endl;
+        
+        // feedback arc set
+        vg::StrandSplitGraph split(test_graph);
+        vector<handle_t> layout = vg::algorithms::eades_algorithm(&split);
+        unordered_map<handle_t, size_t> order;
+        order.reserve(layout.size());
+        for (size_t i = 0; i < layout.size(); ++i) {
+            order[layout[i]] = i;
+        }
+        
+        size_t num_feedback_arcs = 0;
+        split.for_each_handle([&](const handle_t& handle) {
+            split.follow_edges(handle, false, [&](const handle_t& next) {
+                if (order[next] <= order[handle]) {
+                    ++num_feedback_arcs;
+                }
+            });
+        });
+        cerr << "feedback arc set: " << num_feedback_arcs << endl;
+        
+        // max degree
+        size_t max_degree = 0;
+        test_graph->for_each_handle([&](const handle_t& handle) {
+            max_degree = max(max_degree,
+                             test_graph->get_degree(handle, false) + test_graph->get_degree(handle, true));
+        });
+        cerr << "max degree: " << max_degree << endl;
+        cerr << "avg degree: " << (double(2 * num_edges) / double(test_graph->get_node_count())) << endl;
+        
+        // maximum planar subgraph?
+    }
 }
 
 int main(int argc, char** argv) {
@@ -220,11 +297,11 @@ int main(int argc, char** argv) {
     if (test_name == "convert" || test_name == "serialize") {
         convert_graphs_test(convert_type, input_file, test_name == "serialize");
     }
-    else if (test_name == "deserialize" || test_name == "access") {
-        test_from_serialized(convert_type, input_file, test_name == "access");
+    else if (test_name == "deserialize" || test_name == "access" || test_name == "stats") {
+        test_from_serialized(convert_type, input_file, test_name == "access", test_name == "stats");
     }
     else {
-        cerr << "available tests: convert, serialize, deserialize, access" << endl;
+        cerr << "available tests: convert, serialize, deserialize, access, stats" << endl;
         return 1;
     }
 }
