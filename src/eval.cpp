@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
+#include <cmath>
 
 #include "odgi/src/odgi.hpp"
 #include "odgi/src/gfa_to_handle.hpp"
@@ -241,16 +242,16 @@ void test_from_serialized(string& serlialized_type, string& input_file, bool tes
         // avg edge delta
         double total_delta = 0.0;
         test_graph->for_each_edge([&](const edge_t& edge) {
-            total_delta += abs(test_graph->get_id(edge.first), test_graph->get_id(edge.second));
+            total_delta += abs<int64_t>(test_graph->get_id(edge.first), test_graph->get_id(edge.second));
         });
         cerr << "avg edge delta: " << (total_delta / double(num_edges)) << endl;
         
         // is cyclic
-        cerr << "is acyclic: " << !algorithms::is_acyclic(test_graph) << endl;
+        cerr << "is acyclic: " << !vg::algorithms::is_acyclic(test_graph) << endl;
         
         // feedback arc set
-        StrandSplitGraph split(test_graph);
-        vector<handle_t> layout = algorithms::eades_algorithm(&split);
+        vg::StrandSplitGraph split(test_graph);
+        vector<handle_t> layout = vg::algorithms::eades_algorithm(&split);
         unordered_map<handle_t, size_t> order;
         order.reserve(layout.size());
         for (size_t i = 0; i < layout.size(); ++i) {
