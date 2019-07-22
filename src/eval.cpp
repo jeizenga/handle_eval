@@ -242,8 +242,8 @@ void test_from_serialized(string& serlialized_type, string& input_file, bool tes
         // avg edge delta
         double total_delta = 0.0;
         test_graph->for_each_edge([&](const edge_t& edge) {
-            total_delta += abs(int64_t(test_graph->get_id(edge.first)),
-                               int64_t(test_graph->get_id(edge.second)));
+            total_delta += abs((long long) test_graph->get_id(edge.first),
+                               (long long) test_graph->get_id(edge.second));
         });
         cerr << "avg edge delta: " << (total_delta / double(num_edges)) << endl;
         
