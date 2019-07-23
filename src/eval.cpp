@@ -8,7 +8,6 @@
 #include <string>
 #include <cmath>
 
-#include "odgi/src/odgi.hpp"
 #include "odgi/src/gfa_to_handle.hpp"
 #include "odgi/src/algorithms/topological_sort.hpp"
 #include "xg/src/xg.hpp"
@@ -20,6 +19,7 @@
 #include "vg/src/algorithms/is_acyclic.hpp"
 #include "bdsg/packed_graph.hpp"
 #include "bdsg/hash_graph.hpp"
+#include "bdsg/odgi.hpp"
 #include <vg/io/vpkg.hpp>
 
 
@@ -82,7 +82,7 @@ void convert_graphs_test(string& output_format, string& input_file, bool make_se
         }
     }
     else if (og_out){
-        odgi::graph_t og;
+        bdsg::ODGI og;
         odgi::gfa_to_handle(input_file, &og);
         if (make_serialized){
             // TODO: this should really be the default optimize, but for now we just include it
@@ -129,7 +129,7 @@ void test_from_serialized(string& serlialized_type, string& input_file, bool tes
     vg::VG* vg_graph = nullptr;
     bdsg::PackedGraph* pg  = nullptr;
     bdsg::HashGraph* hg = nullptr;
-    odgi::graph_t* og = nullptr;
+    bdsg::ODGI* og = nullptr;
     xg::XG* xg = nullptr;
     
     PathHandleGraph* test_graph = nullptr;
@@ -151,7 +151,7 @@ void test_from_serialized(string& serlialized_type, string& input_file, bool tes
         test_graph = hg;
     }
     else if (og_in){
-        og = new odgi::graph_t();
+        og = new bdsg::ODGI();
         og->load(in);
         test_graph = og;
     }
