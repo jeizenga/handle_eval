@@ -11,7 +11,7 @@ FINDLIB+=-L /opt/local/lib
 FINDLIB+=-L /opt/local/lib/libomp
 
 LIB=
-LIB+=-lvg -lvgio -lsglib -lxg
+LIB+=-lvg -lvgio -lbdsg -lxg
 LIB+=-lvcflib -lgssw -lssw -lprotobuf -lsublinearLS -lhts -ldeflate -lpthread -ljansson -lncurses -lgcsa2 -lgbwt -ldivsufsort -ldivsufsort64 -lvcfh -lgfakluge -lraptor2 -lsdsl -lpinchesandcacti -l3edgeconnected -lsonlib -lfml -llz4 -lstructures -lvw -lboost_program_options -lallreduce -lz -lbz2 -llzma -lhandlegraph -lomp -lstdc++
 LIB+=-lcairo -lz -lgobject-2.0 -lffi -lglib-2.0 -lpcre  -liconv -lpixman-1 -lfontconfig -liconv -lexpat -luuid -lfreetype -lbz2 -lpng16 -lz -lX11-xcb -lxcb-render -lXrender -lXext -lX11 -lxcb -lXau -lXdmcp -ldl -llzma -lrocksdb  -lsnappy -lz -lbz2 -llz4
 LIB+=-latomic
@@ -64,8 +64,8 @@ CXXFLAGS += -Xpreprocessor -fopenmp
 
 all: bin/eval
 
-lib/libsglib.a: $(wildcard sglib-easy/deps/sglib/src/*) $(wildcard sglib-easy/deps/sglib/include/*)
-	cd sglib-easy && make && INSTALL_PREFIX=$(CWD) make install
+lib/libbdsg.a: $(wildcard libbdsg-easy/deps/bdsg/src/*) $(wildcard libbdsg-easy/deps/bdsg/include/*)
+	cd libbdsg-easy && make && INSTALL_PREFIX=$(CWD) make install
 
 vg/lib/libvg.a: $(wildcard vg/src/*)
 	cd vg && make
@@ -76,7 +76,7 @@ xg/lib/libxg.a: $(wildcard xg/src/*)
 odgi/build/CMakeFiles/odgi.dir/src/graph.cpp.o: $(wildcard odgi/src/*)
 	cd odgi && mkdir -p build && cd build && cmake .. && make
 
-bin/eval: src/eval.cpp lib/libsglib.a vg/lib/libvg.a odgi/build/CMakeFiles/odgi.dir/src/graph.cpp.o xg/lib/libxg.a
+bin/eval: src/eval.cpp lib/libbdsg.a vg/lib/libvg.a odgi/build/CMakeFiles/odgi.dir/src/graph.cpp.o xg/lib/libxg.a
 	g++ src/eval.cpp $(INC) $(CXXFLAGS) -c -o obj/eval.o
 	g++ obj/eval.o $(ODGI_OBJ) $(FINDLIB) $(LIB) $(CXXFLAGS) -o bin/eval
 

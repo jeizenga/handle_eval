@@ -10,3 +10,6 @@
 [submodule "sglib-easy"]
 	path = sglib-easy
 	url = https://github.com/vgteam/sglib-easy.git
+[submodule "libbdsg-easy"]
+	path = libbdsg-easy
+	url = https://github.com/vgteam/libbdsg-easy.git

@@ -18,8 +18,8 @@
 #include "vg/src/split_strand_graph.hpp"
 #include "vg/src/algorithms/eades_algorithm.hpp"
 #include "vg/src/algorithms/is_acyclic.hpp"
-#include "sglib/packed_graph.hpp"
-#include "sglib/hash_graph.hpp"
+#include "bdsg/packed_graph.hpp"
+#include "bdsg/hash_graph.hpp"
 #include <vg/io/vpkg.hpp>
 
 
@@ -66,7 +66,7 @@ void convert_graphs_test(string& output_format, string& input_file, bool make_se
         }
     }
     else if (pg_out){
-        sglib::PackedGraph pg;
+        bdsg::PackedGraph pg;
         odgi::gfa_to_handle(input_file, &pg);
         if (make_serialized){
             pg.optimize();
@@ -74,7 +74,7 @@ void convert_graphs_test(string& output_format, string& input_file, bool make_se
         }
     }
     else if (hg_out){
-        sglib::HashGraph hg;
+        bdsg::HashGraph hg;
         odgi::gfa_to_handle(input_file, &hg);
         if (make_serialized){
             hg.optimize();
@@ -127,8 +127,8 @@ void test_from_serialized(string& serlialized_type, string& input_file, bool tes
     }
     
     vg::VG* vg_graph = nullptr;
-    sglib::PackedGraph* pg  = nullptr;
-    sglib::HashGraph* hg = nullptr;
+    bdsg::PackedGraph* pg  = nullptr;
+    bdsg::HashGraph* hg = nullptr;
     odgi::graph_t* og = nullptr;
     xg::XG* xg = nullptr;
     
@@ -141,12 +141,12 @@ void test_from_serialized(string& serlialized_type, string& input_file, bool tes
         test_graph = vg_graph;
     }
     else if (pg_in){
-        pg = new sglib::PackedGraph();
+        pg = new bdsg::PackedGraph();
         pg->deserialize(in);
         test_graph = pg;
     }
     else if (hg_in){
-        hg = new sglib::HashGraph();
+        hg = new bdsg::HashGraph();
         hg->deserialize(in);
         test_graph = hg;
     }
