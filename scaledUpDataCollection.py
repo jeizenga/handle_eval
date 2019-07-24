@@ -7,35 +7,47 @@ import sys
 
 
 class resultMaker:
-    def __init__(self, testFileDir, outputFile):
-        self.outputFile = outputFile
+    def __init__(self, testFileDir, outputDir):
+        self.outputDir = outputDir
         self.testFileDir = testFileDir
         self.numberOfIterations = 1
         self.graphTypes = ["vg", "hg", "pg", "xg", "og"]
         self.testTypes = ["convert", "serialize", "deserialize", "access", "stats"]
 
     def runFiles(self):
-        with open(self.outputFile, "w") as outputFile:
+        for fileName in os.listdir(self.testFileDir):
+            if not (fileName.endswith(".gfa") or fileName.endswith(".gfa.gz")):
+                continue
+            
+            shortFileName = fileName
+            if fileName.endswith(".gz"):
+                shortFileName = fileName[:fileName.index(".gz")]
+            
+            outputFileName = shortFileName + ".tsv"
+
+            if os.path.isfile(os.path.join(self.outputDir, outputFileName)):
+                print("output already exists, skipping file " + outputFileName, file = sys.stderr)
+                continue
+        
+            gzipped = fileName.endswith(".gz")
+            if gzipped:
+                # unzip it
+                subprocess.check_call(["gunzip", os.path.join(self.testFileDir, fileName)])
+                # point at the unzipped file
+                fileName = shortFileName
+                    
+            outputFile = open(os.path.join(self.outputDir, outputFileName), "w")
+            
+            # print a header
+            print("\t".join(cols), file = outputFile)
             
             cols = ["graph.name", "graph.node.count", "graph.edge.count", "graph.path.count", "graph.step.count", "graph.avg.path.depth", "graph.seq.length",
                     "graph.max.degree", "graph.avg.degree", "graph.cyclic", "graph.avg.edge.delta", "graph.feedback.fraction", "graph.feedback.arc.count",
                     "sglib.model", "build.mem", "load.mem", "build.time", "load.time", "handle.enumeration.time", "edge.traversal.time", "path.traversal.time"]
                     
-            # print a header
-            print("\t".join(cols), file = outputFile)
-            
-            for fileName in os.listdir(self.testFileDir):
-                if not (fileName.endswith(".gfa") or fileName.endswith(".gfa.gz")):
-                    continue
-                
-                gzipped = fileName.endswith(".gz")
-                if gzipped:
-                    # unzip it
-                    subprocess.check_call(["gunzip", os.path.join(self.testFileDir, fileName)])
-                    # point at the unzipped file
-                    fileName = fileName[:fileName.index(".gz")]
 
-                print("testing on " + fileName, file = sys.stderr)
+            print("testing on " + fileName, file = sys.stderr)
+            try:
                 for graphType in self.graphTypes:
                     print("\ttesting graph type " + graphType, file = sys.stderr)
                     for i in range(0,self.numberOfIterations):
@@ -69,10 +81,17 @@ class resultMaker:
                             
                         # clean up the graph we made
                         os.remove(os.path.join(self.testFileDir, graphFile))
+                        
+            except subprocess.CalledProcessError as err:
+                # we had an issue, clean up the output file so we don't have half-finished ones around
+                outputFile.close()
+                if os.path.isfile(os.path.join(self.outputDir, outputFileName)):
+                    os.remove(os.path.join(self.outputDir, outputFileName))
+                raise err
             
-                if gzipped:
-                    # zip it back up
-                    subprocess.check_call(["gzip", os.path.join(self.testFileDir, fileName)])
+            if gzipped:
+                # zip it back up
+                subprocess.check_call(["gzip", os.path.join(self.testFileDir, fileName)])
             
     def parseTimeStr(self, timeStr):
         tokens = timeStr.split(":")
@@ -107,7 +126,7 @@ class resultMaker:
         if p.returncode != 0:
             print("Command failed: " + " ".join(cmd), file = sys.stderr)
             print("stderr:\n" + err, file = sys.stderr)
-            assert(False)
+            raise subprocess.CalledProcessError
 
         return err, outName
 
@@ -185,9 +204,9 @@ class resultMaker:
 
 def argParser():
     parser=argparse.ArgumentParser(add_help=True)
-    parser.add_argument("--outputFile","-o",
+    parser.add_argument("--outputDir","-o",
                         type=str,
-                        help="specify the file name of the output file")
+                        help="specify the directory to drop the output files in")
     parser.add_argument("--testFileDir","-i",
                         type=str,
                         help="specify the directory name of the input files")
@@ -197,7 +216,7 @@ def argParser():
 
 def main():
     args = argParser()
-    myResultMaker = resultMaker(args["testFileDir"],args["outputFile"])
+    myResultMaker = resultMaker(args["testFileDir"],args["outputDir"])
     myResultMaker.runFiles()
 
 
