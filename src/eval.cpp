@@ -8,6 +8,7 @@
 #include <string>
 #include <cmath>
 
+#include "odgi/src/odgi.hpp"
 #include "odgi/src/gfa_to_handle.hpp"
 #include "odgi/src/algorithms/topological_sort.hpp"
 #include "xg/src/xg.hpp"
