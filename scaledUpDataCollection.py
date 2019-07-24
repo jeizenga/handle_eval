@@ -25,8 +25,15 @@ class resultMaker:
             print("\t".join(cols), file = outputFile)
             
             for fileName in os.listdir(self.testFileDir):
-                if not fileName.endswith(".gfa"):
+                if not (fileName.endswith(".gfa") or fileName.endswith(".gfa.gz")):
                     continue
+                
+                gzipped = fileName.endswith(".gz")
+                if gzipped:
+                    # unzip it
+                    subprocess.check_call(["gunzip", os.path.join(self.testFileDir, fileName)])
+                    # point at the unzipped file
+                    fileName = fileName[:fileName.index(".gz")]
 
                 print("testing on " + fileName, file = sys.stderr)
                 for graphType in self.graphTypes:
@@ -62,7 +69,11 @@ class resultMaker:
                             
                         # clean up the graph we made
                         os.remove(os.path.join(self.testFileDir, graphFile))
-
+            
+                if gzipped:
+                    # zip it back up
+                    subprocess.check_call(["gzip", os.path.join(self.testFileDir, fileName)])
+            
     def parseTimeStr(self, timeStr):
         tokens = timeStr.split(":")
         secs = 0.0
