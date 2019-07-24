@@ -38,13 +38,13 @@ class resultMaker:
                     
             outputFile = open(os.path.join(self.outputDir, outputFileName), "w")
             
-            # print a header
-            print("\t".join(cols), file = outputFile)
-            
             cols = ["graph.name", "graph.node.count", "graph.edge.count", "graph.path.count", "graph.step.count", "graph.avg.path.depth", "graph.seq.length",
                     "graph.max.degree", "graph.avg.degree", "graph.cyclic", "graph.avg.edge.delta", "graph.feedback.fraction", "graph.feedback.arc.count",
                     "sglib.model", "build.mem", "load.mem", "build.time", "load.time", "handle.enumeration.time", "edge.traversal.time", "path.traversal.time"]
-                    
+            
+            # print a header
+            print("\t".join(cols), file = outputFile)
+            
 
             print("testing on " + fileName, file = sys.stderr)
             try:
