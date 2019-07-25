@@ -20,8 +20,8 @@ class resultMaker:
                 continue
             
             shortFileName = fileName
-            if fileName.endswith(".gz"):
-                shortFileName = fileName[:fileName.index(".gz")]
+            if shortFileName.endswith(".gz"):
+                shortFileName = shortFileName[:shortFileName.index(".gz")]
             
             outputFileName = shortFileName + ".tsv"
 
@@ -75,7 +75,7 @@ class resultMaker:
                         # print the row out to the output file
                         
                         row = [fileName, graphStats["nodeCount"], graphStats["edgeCount"], graphStats["pathCount"], graphStats["stepCount"], 
-                               graphStats["avgPathDepth"], graphStats["seqLength"], graphStats["maxDegree"], graphStats["cyclic"], graphStats["avgEdgeDelta"],
+                               graphStats["avgPathDepth"], graphStats["seqLength"], graphStats["maxDegree"], graphStats["avgDegree"], graphStats["cyclic"], graphStats["avgEdgeDelta"],
                                graphStats["feedbackFraction"], graphStats["feedbackArcs"], graphType, constructStats["memoryUsage"], loadStats["memoryUsage"],
                                constructStats["cpuTime"], loadStats["cpuTime"], accessStats["nodes"][1], accessStats["edges"][1], accessStats["paths"][1]]
                         print("\t".join(str(val) for val in row), file = outputFile)
