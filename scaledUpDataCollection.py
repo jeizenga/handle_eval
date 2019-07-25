@@ -26,6 +26,7 @@ class resultMaker:
             outputFileName = shortFileName + ".tsv"
 
             if os.path.isfile(os.path.join(self.outputDir, outputFileName)):
+                
                 print("output already exists, skipping file " + outputFileName, file = sys.stderr)
                 continue
         
@@ -126,7 +127,7 @@ class resultMaker:
         if p.returncode != 0:
             print("Command failed: " + " ".join(cmd), file = sys.stderr)
             print("stderr:\n" + err, file = sys.stderr)
-            raise subprocess.CalledProcessError
+            raise subprocess.CalledProcessError(p.returncode, " ".join(cmd))
 
         return err, outName
 
