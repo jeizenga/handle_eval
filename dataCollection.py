@@ -13,53 +13,49 @@ class resultMaker:
         # self.numberOfTestTypes = 1
 
     def runFiles(self):
-        # Create output directory for the temp files
-        if not os.path.exists(self.testFileDir+"created"):
-            os.mkdir(self.testFileDir+"created")
-
         with open(self.outputFile, "w") as outputFile:
             for i in range(0,self.numberOfIterations):
                 for fileName in os.listdir(self.testFileDir):
-                    if fileName[-3:] in [".vg",".pg", ".hg",".og" ]:
-                        for graphType in range(1, self.numberOfGraphTypes):
-                            for test in range(0, 2):
-                                rawStats = self.getStatistics(test, graphType, self.testFileDir, fileName, test)
-                                timeMemStats = self.parseData(rawStats)
-                                outputFile.write(fileName)
+                    for test in range(0, 2):
+                        for graph in range(1, self.numberOfGraphTypes):
+                            rawStats = self.getStatistics(test, graph, self.testFileDir, fileName, test)
+                            timeMemStats = self.parseData(rawStats)
+                            outputFile.write(fileName)
+                            outputFile.write("\t")
+                            outputFile.write(str(test))
+                            outputFile.write("\t")
+                            outputFile.write(str(graph))
+                            outputFile.write("\t")
+                            for stat in timeMemStats:
+                                outputFile.write(str(stat))
                                 outputFile.write("\t")
-                                outputFile.write(str(test))
-                                outputFile.write("\t")
-                                outputFile.write(str(graphType))
-                                outputFile.write("\t")
-                                for stat in timeMemStats:
-                                    outputFile.write(str(stat))
-                                    outputFile.write("\t")
-                                outputFile.write("\n")
-                            for test in range(2, 6):
-                                graphName = fileName[:-3]
-                                if graphType == 1:
-                                    graphName = graphName+".vg"
-                                elif graphType == 2:
-                                    graphName = graphName+".pg"
-                                elif graphType == 3:
-                                    graphName = graphName+".hg"
-                                elif graphType == 4:
-                                    graphName = graphName+".og"
+                            outputFile.write("\n")
+            for i in range(0, self.numberOfIterations):
+                for fileName in os.listdir(self.testFileDir+"created/"):
+                    for test in range(2, 6):
+                        graphName = fileName[-3:]
+                        if graphName == ".vg":
+                            graphType = 1
+                        elif graphName == ".pg":
+                            graphType = 2
+                        elif graphName == ".hg":
+                            graphType = 3
+                        elif graphName == ".og":
+                            graphType = 4
 
-                                if graphType:
-                                    rawStats = self.getStatistics(test, graphType, self.testFileDir+"created/", graphName)
-                                    timeMemStats = self.parseData(rawStats)
-                                    outputFile.write(graphName)
-                                    outputFile.write("\t")
-                                    outputFile.write(str(test))
-                                    outputFile.write("\t")
-                                    outputFile.write(str(graphType))
-                                    outputFile.write("\t")
-                                    for stat in timeMemStats:
-                                        outputFile.write(str(stat))
-                                        outputFile.write("\t")
-                                    outputFile.write("\n")
-                            os.remove(self.testFileDir+"created/"+graphName)
+                        if graphType:
+                            rawStats = self.getStatistics(test, graphType, self.testFileDir+"created/", fileName)
+                            timeMemStats = self.parseData(rawStats)
+                            outputFile.write(fileName)
+                            outputFile.write("\t")
+                            outputFile.write(str(test))
+                            outputFile.write("\t")
+                            outputFile.write(str(graphType))
+                            outputFile.write("\t")
+                            for stat in timeMemStats:
+                                outputFile.write(str(stat))
+                                outputFile.write("\t")
+                            outputFile.write("\n")
 
 
     def getStatistics(self, testType, graphType, directory, file, serialize=False):
