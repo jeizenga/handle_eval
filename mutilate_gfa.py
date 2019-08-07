@@ -22,7 +22,7 @@ if __name__ == "__main__":
     assert(0.0 <= min_mut_prob and min_mut_prob <= max_mut_prob and max_mut_prob <= 1.0)
     
     for file_name in os.listdir(test_dir):
-        if not file_name.endswith(".gfa") or file_name.endswith(".gfa.gz"):
+        if not (file_name.endswith(".gfa") or file_name.endswith(".gfa.gz")):
             continue
         
         is_gzipped = file_name.endswith(".gz")
@@ -39,6 +39,9 @@ if __name__ == "__main__":
         
         with open(os.path.join(out_dir, out_file_name), "w") as out:
             for line in in_file:
+                if type(line) == bytes:
+                    line = line.decode("utf-8")
+                    
                 if (not (line.startswith("L") or line.startswith("E"))) or random.random() > mut_prob:
                     out.write(line)
                     

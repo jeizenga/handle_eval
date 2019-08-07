@@ -34,6 +34,9 @@ if __name__ == "__main__":
         
         with open(os.path.join(out_dir, out_file_name), "w") as out:
             for line in in_file:
+                if type(line) == bytes:
+                    line = line.decode("utf-8")
+                    
                 if not (line.startswith("P") or line.startswith("O")):
                     out.write(line)
                 else:
