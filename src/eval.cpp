@@ -161,12 +161,15 @@ void test_from_serialized(string& serlialized_type, string& input_file, bool tes
         test_graph = xg;
     }
     
+    int edge_counter = 0;
+    int node_counter = 0;
+    int path_counter = 0;
+    
     if (test_accesses) {
         
-        int node_counter = 0;
         auto node_start = std::chrono::system_clock::now();
         test_graph->for_each_handle([&](const handle_t& h) {
-            node_counter++;
+            ++node_counter;
         });
         auto node_end = std::chrono::system_clock::now();
         std::chrono::duration<double> node_elapsed_seconds = node_end - node_start;
@@ -178,22 +181,20 @@ void test_from_serialized(string& serlialized_type, string& input_file, bool tes
             }
         });
         
-        int edge_counter = 0;
         auto edge_start = std::chrono::system_clock::now();
         for(handle_t handle:handles){
             test_graph->follow_edges(handle, true, [&](const handle_t& next) {
-                edge_counter++;
+                ++edge_counter;
             });
         }
         auto edge_end = std::chrono::system_clock::now();
         
         std::chrono::duration<double> edge_elapsed_seconds = edge_end - edge_start;
         
-        int path_counter = 0;
         auto path_start = std::chrono::system_clock::now();
         test_graph->for_each_path_handle([&](const path_handle_t& path_handle) {
             test_graph->for_each_step_in_path(path_handle, [&](const step_handle_t& step) {
-                path_counter++;
+                ++path_counter;
             });
         });
         auto path_end = std::chrono::system_clock::now();

@@ -26,20 +26,9 @@ def createFigure(inputFile, outputDirectory, comparex, comparey, normalize=False
     # Create output directory if don't exist, where all the figures will be put
     if not os.path.exists(outputDirectory):
         os.mkdir(outputDirectory)
-
-
-    with open(inputFile, "r") as inFile:
-        header = inFile.readline().rstrip().split()
-
-        # got to deal with the missing data
-        header.remove("graph.avg.degree")
-        header.append("graph.avg.degree")
-
-    df = pandas.read_csv(inputFile,  sep='\t', header=None, skiprows=[0], names=header)
-
-    # calculate the missing graph.avg.degree column
-    df["graph.avg.degree"] = (2*df["graph.edge.count"])/df["graph.node.count"]
-
+    
+    # load the data
+    df = pandas.read_csv(inputFile,  sep='\t', header=0)
 
     # create a smaller data frame called data to store columns that we will be working with
     if normalize:
