@@ -17,7 +17,7 @@ if __name__ == "__main__":
     out_dir = sys.argv[2]  
     
     for file_name in os.listdir(test_dir):
-        if not file_name.endswith(".gfa") or file_name.endswith(".gfa.gz"):
+        if not (file_name.endswith(".gfa") or file_name.endswith(".gfa.gz")):
             continue
         
         is_gzipped = file_name.endswith(".gz")        
