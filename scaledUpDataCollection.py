@@ -15,7 +15,7 @@ class resultMaker:
         self.testTypes = ["convert", "serialize", "deserialize", "access", "stats"]
 
     def runFiles(self):
-        for fileName in os.listdir(self.testFileDir):
+        for fileName in sorted(os.listdir(self.testFileDir), key = lambda x: os.path.getsize(os.path.join(self.testFileDir, x)), reverse = True):
             if not (fileName.endswith(".gfa") or fileName.endswith(".gfa.gz")):
                 continue
             
