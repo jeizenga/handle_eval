@@ -75,9 +75,9 @@ def createFigure(inputFile, outputDirectory):
         for graphType in convertFileData["graph type"].unique():
 
             deserializeFileGraphData = deserializeData.loc[df["file name"] == fileName].loc[df["graph type"] == graphType]
-            utilize[graphType] = np.mean(deserializeFileGraphData["max memory"]) / 1024 # convert KB -> MB
+            utilize[graphType] = np.mean(deserializeFileGraphData["max memory"]) * 4096 / 1024 # convert pages -> MB
             convertFileGraphData  = convertFileData.loc[df["graph type"] == graphType]
-            memory[graphType] = np.mean(convertFileGraphData["max memory"]) / 1024 # convert KB -> MB
+            memory[graphType] = np.mean(convertFileGraphData["max memory"]) * 4096 / 1024 # convert pages -> MB
             # speed[graphType] = np.mean(convertFileGraphData["sys"] + convertFileGraphData["usr"])
             speed[graphType] = [convertFileGraphData["sys"] + convertFileGraphData["usr"]]
 
