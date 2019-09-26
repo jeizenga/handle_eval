@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-INPUT_DIR=extra-disk/bad_gfas/
+INPUT_DIR=extra-disk/mutilated/
 OUTPUT_DIR=erik_out/
-BAD_DUMP=extra-disk/still_bad_gfas/
+BAD_DUMP=extra-disk/bad_gfas/
 
 RUN="1"
 while [ $RUN != "0" ]
